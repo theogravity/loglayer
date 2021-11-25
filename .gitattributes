@@ -1,0 +1,2 @@
+# Prevent merge conflicts with CHANGELOG.md updates
+CHANGELOG.md merge=union
