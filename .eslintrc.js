@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'eslint-plugin-prettier', 'autofix', 'import', 'compat', 'unused-imports', 'react-perf'],
+  plugins: ['@typescript-eslint', 'eslint-plugin-prettier', 'autofix', 'import', 'compat', 'unused-imports'],
   rules: {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-var-requires': 0,
@@ -27,6 +27,5 @@ module.exports = {
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
-    'plugin:react-perf/recommended',
   ],
 };

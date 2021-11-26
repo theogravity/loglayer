@@ -1,3 +1,5 @@
-const blah = 'abcd'
+/* istanbul ignore file */
 
-console.log(blah)
+export { LogLayer } from './LogLayer'
+export { MockLogLayer } from './MockLogLayer'
+export * from './types'

@@ -1,13 +1,11 @@
 {
-  "name": "boilerplate-typescript",
-  "private": true,
-  "version": "1.0.1",
-  "description": "My personal boilerplate for new projects using typescript",
+  "name": "loglayer",
+  "version": "1.0.0",
+  "description": "A wrapper around logging libraries to provide a consistent way to specify context, metadata, and errors.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
     "build": "npm run build:clean && npm run compile",
-    "build:docs": "typedoc --options typedoc.js --plugin typedoc-plugin-markdown src/ --out docs",
     "build:clean": "rm -rf build/*",
     "compile": "tsc",
     "debug": "ts-node-dev --inspect -- src/index.ts",
@@ -28,26 +26,46 @@
     "changelog:stamp": "git-commit-stamper parse CHANGELOG.md",
     "changelog:release": "changelog-version release",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
-    "ts-node-dev": "ts-node-dev"
+    "ts-node-dev": "ts-node-dev",
+    "livetest:console": "ts-node-dev livetests/console.ts",
+    "livetest:bunyan": "ts-node-dev livetests/bunyan.ts",
+    "livetest:winston": "ts-node-dev livetests/winston.ts",
+    "livetest:pino": "ts-node-dev livetests/pino.ts",
+    "livetest:roarr": "ROARR_LOG=true ts-node-dev livetests/roarr.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/theogravity/boilerplate.git"
+    "url": "git+https://github.com/theogravity/loglayer.git"
   },
   "author": "Theo Gravity <theo@suteki.nu>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/theogravity/boilerplate/issues"
+    "url": "https://github.com/theogravity/loglayer/issues"
   },
-  "homepage": "https://github.com/theogravity/boilerplate#readme",
+  "homepage": "https://github.com/theogravity/loglayer",
+  "keywords": [
+    "logging",
+    "log",
+    "roarr",
+    "winston",
+    "bunyan",
+    "structured",
+    "standard",
+    "wrapper",
+    "serialize",
+    "error"
+  ],
   "dependencies": {},
   "devDependencies": {
     "@theo.gravity/changelog-version": "^2.1.11",
     "@theo.gravity/version-bump": "^2.0.14",
+    "@types/bunyan": "^1.8.8",
     "@types/jest": "^27.0.3",
     "@types/node": "^16.11.10",
+    "@types/roarr": "^2.14.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
+    "bunyan": "^1.8.15",
     "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^6.0.0",
@@ -58,24 +76,23 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-markdown": "^2.2.1",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.27.1",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "eslint-plugin-react-perf": "^3.3.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "git-commit-stamper": "^1.0.10",
     "jest": "^27.3.1",
     "jest-cli": "^27.3.1",
     "jest-junit-reporter": "^1.1.0",
     "lint-staged": "^12.1.2",
+    "pino": "^7.4.1",
     "pre-commit": "^1.2.2",
     "prettier": "^2.5.0",
+    "roarr": "^7.8.0",
+    "serialize-error": "8.1.0",
     "toc-md-alt": "^0.4.2",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
-    "typedoc": "^0.22.10",
-    "typedoc-plugin-markdown": "^3.11.7",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.2",
+    "winston": "^3.3.3"
   },
   "lint-staged": {
     "src/**/*.ts": [
