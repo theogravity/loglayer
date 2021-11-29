@@ -10,6 +10,8 @@ Standardize the way you write logs with `loglayer` using your existing logging l
 
 Spend less time from having to *define* your logs and spend more writing them.
 
+- Switch between different logging libraries if you do not like the one you use without changing your entire codebase.
+  * Starting off with `console` and want to switch to `bunyan` later? You can with little effort!
 - Intuitive API with no dependencies.
 - Written in typescript.
 - Installation instructions for each logging library.
