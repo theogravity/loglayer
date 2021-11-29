@@ -1,5 +1,10 @@
 # loglayer
 
+[![NPM version](https://img.shields.io/npm/v/loglayer.svg?style=flat-square)](https://www.npmjs.com/package/loglayer)
+[![CircleCI](https://circleci.com/gh/kriasoft/node-loglayer.svg?style=svg)](https://circleci.com/gh/theogravity/loglayer)
+![built with typescript](https://camo.githubusercontent.com/92e9f7b1209bab9e3e9cd8cdf62f072a624da461/68747470733a2f2f666c61742e62616467656e2e6e65742f62616467652f4275696c74253230576974682f547970655363726970742f626c7565)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 Standardize the way you write logs with `loglayer` using your existing logging library 
 (`bunyan` / `winston` / `pino` / `roarr` / etc).
 
