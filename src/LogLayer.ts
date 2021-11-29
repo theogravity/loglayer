@@ -64,13 +64,15 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
    * Appends context data which will be included with
    * every log entry.
    */
-  withContext(context: Record<string, any>) {
+  withContext(context: Record<string, any>): LogLayer<ExternalLogger, ErrorType> {
     this.context = {
       ...this.context,
       ...context,
     }
 
     this.hasContext = true
+
+    return this
   }
 
   /**

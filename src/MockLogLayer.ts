@@ -19,7 +19,9 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
 
   metadataOnly(metadata: Record<string, any>, logLevel: LogLevel): void {}
 
-  withContext(context: Record<string, any>): void {}
+  withContext(context: Record<string, any>): ILogLayer<any, ErrorType> {
+    return this
+  }
 
   withError(error: ErrorType): ILogBuilder {
     return new MockLogBuilder()

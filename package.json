@@ -31,7 +31,8 @@
     "livetest:bunyan": "ts-node-dev livetests/bunyan.ts",
     "livetest:winston": "ts-node-dev livetests/winston.ts",
     "livetest:pino": "ts-node-dev livetests/pino.ts",
-    "livetest:roarr": "ROARR_LOG=true ts-node-dev livetests/roarr.ts"
+    "livetest:roarr": "ROARR_LOG=true ts-node-dev livetests/roarr.ts",
+    "livetest:express": "ts-node-dev livetests/express.ts"
   },
   "repository": {
     "type": "git",
@@ -77,6 +78,7 @@
     "eslint-plugin-markdown": "^2.2.1",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "express": "^4.17.1",
     "git-commit-stamper": "^1.0.10",
     "jest": "^27.3.1",
     "jest-cli": "^27.3.1",

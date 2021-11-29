@@ -56,7 +56,7 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
    * Appends context data which will be included with
    * every log entry.
    */
-  withContext(context: Record<string, any>): void
+  withContext(context: Record<string, any>): ILogLayer<ExternalLogger, ErrorType>
   /**
    * Specifies metadata to include with the log message
    */
