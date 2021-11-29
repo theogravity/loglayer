@@ -1,3 +1,9 @@
+## 1.0.2 - Mon Nov 29 2021 04:16:06
+
+**Contributor:** Theo Gravity
+
+- Update README.md
+
 ## 1.0.1 - Mon Nov 29 2021 03:48:11
 
 **Contributor:** Theo Gravity
