@@ -217,10 +217,8 @@ app.use((req, res, next) => {
       instance: p,
       type: LoggerType.PINO
     }
-  })
-  
-  // Add a request id for each new request
-  req.log.withContext({
+    // Add a request id for each new request
+  }).withContext({
     // generate a random id
     reqId: Math.floor(Math.random() * 100000).toString(10),
     // let's also add in some additional details about the server
@@ -457,9 +455,10 @@ log.info('request id: %s', id)
 
 ### Including context with each log message
 
-`LogLayer#withContext(data: Record<string, any>): void`
+`LogLayer#withContext(data: Record<string, any>): LogLayer`
 
-This adds or replaces context data to be included with each log entry.
+- This adds or replaces context data to be included with each log entry.
+- Can be chained with other methods.
 
 ```typescript
 log.withContext({
