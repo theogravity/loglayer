@@ -76,6 +76,13 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   /**
+   * Returns the context used for the logger
+   */
+  getContext() {
+    return this.context
+  }
+
+  /**
    * Specifies metadata to include with the log message
    */
   withMetadata(metadata: Record<string, any>) {

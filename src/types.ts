@@ -78,6 +78,11 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
    * Returns the underlying log instance
    */
   getLoggerInstance(): ExternalLogger
+
+  /**
+   * Returns the context used for the logger
+   */
+  getContext(): Record<string, any>
 }
 
 export enum LogLevel {
