@@ -68,6 +68,7 @@ logLayer
       - [Data output options](#data-output-options)
   - [Logging messages](#logging-messages)
   - [Including context with each log message](#including-context-with-each-log-message)
+    - [Getting context](#getting-context)
   - [Logging metadata](#logging-metadata)
     - [With a message](#with-a-message)
     - [Standalone](#standalone)
@@ -483,6 +484,17 @@ Output from `pino`:
   "requestId": 1234,
   "msg": "this is a request"
 }
+```
+
+#### Getting context
+
+```typescript
+log.withContext({
+  requestId: 1234
+})
+
+// Should return { requestId: 1234 }
+const context = log.getContext()
 ```
 
 ### Logging metadata

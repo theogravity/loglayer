@@ -364,6 +364,10 @@ describe('loglayer general tests', () => {
 
       log.info('a request')
 
+      expect(log.getContext()).toStrictEqual({
+        reqId: 1234,
+      })
+
       expect(genericLogger.getLine()).toStrictEqual(
         expect.objectContaining({
           level: LogLevel.info,

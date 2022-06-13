@@ -30,4 +30,8 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
   withMetadata(metadata: Record<string, any>): ILogBuilder {
     return new MockLogBuilder()
   }
+
+  getContext(): Record<string, any> {
+    return {}
+  }
 }
