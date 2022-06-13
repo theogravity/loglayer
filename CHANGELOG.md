@@ -1,3 +1,11 @@
+## 1.1.1 - Mon Jun 13 2022 22:14:21
+
+**Contributor:** Theo Gravity
+
+- Add getContext() (#2)
+
+Adds a new method to the logger, `getContext()`, which returns the current context.
+
 ## 1.0.2 - Mon Nov 29 2021 04:16:06
 
 **Contributor:** Theo Gravity
