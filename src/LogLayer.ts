@@ -241,9 +241,22 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     let d = {}
 
     if (hasObjData) {
-      d = {
-        ...this.formatContext(),
-        ...this.formatMetadata(data),
+      // Field names for context and metadata is the same, merge the metadata into the same field name
+      if (this._config.context.fieldName && this._config.context.fieldName === this._config.metadata.fieldName) {
+        const contextData = this.formatContext()[this._config.context.fieldName]
+        const metadata = this.formatMetadata(data)[this._config.metadata.fieldName]
+
+        d = {
+          [this._config.context.fieldName]: {
+            ...contextData,
+            ...metadata,
+          },
+        }
+      } else {
+        d = {
+          ...this.formatContext(),
+          ...this.formatMetadata(data),
+        }
       }
     }
 

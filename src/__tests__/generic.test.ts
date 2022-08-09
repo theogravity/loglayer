@@ -349,10 +349,13 @@ describe('loglayer general tests', () => {
       )
     })
 
-    it('should use a custom context field', () => {
+    it('should use a custom context and metadata field', () => {
       const log = getLogger({
         context: {
           fieldName: 'myContext',
+        },
+        metadata: {
+          fieldName: 'myMetadata',
         },
       })
 
@@ -362,7 +365,11 @@ describe('loglayer general tests', () => {
         reqId: 1234,
       })
 
-      log.info('a request')
+      log
+        .withMetadata({
+          my: 'metadata',
+        })
+        .info('a request')
 
       expect(log.getContext()).toStrictEqual({
         reqId: 1234,
@@ -376,8 +383,69 @@ describe('loglayer general tests', () => {
               myContext: {
                 reqId: 1234,
               },
+              myMetadata: {
+                my: 'metadata',
+              },
             },
             'a request',
+          ],
+        }),
+      )
+    })
+
+    it('should use a custom metadata field', () => {
+      const log = getLogger({
+        metadata: {
+          fieldName: 'myMetadata',
+        },
+      })
+
+      const genericLogger = log.getLoggerInstance()
+
+      log.metadataOnly({
+        my: 'metadata',
+      })
+
+      expect(genericLogger.getLine()).toStrictEqual(
+        expect.objectContaining({
+          level: LogLevel.info,
+          data: [
+            {
+              myMetadata: {
+                my: 'metadata',
+              },
+            },
+          ],
+        }),
+      )
+    })
+
+    it('should merge metadata and context fields if they are the same field name', () => {
+      const log = getLogger({
+        metadata: {
+          fieldName: 'sharedData',
+        },
+        context: {
+          fieldName: 'sharedData',
+        },
+      })
+
+      const genericLogger = log.getLoggerInstance()
+
+      log.withContext({ ctx: 'data' }).metadataOnly({
+        my: 'metadata',
+      })
+
+      expect(genericLogger.getLine()).toStrictEqual(
+        expect.objectContaining({
+          level: LogLevel.info,
+          data: [
+            {
+              sharedData: {
+                my: 'metadata',
+                ctx: 'data',
+              },
+            },
           ],
         }),
       )
