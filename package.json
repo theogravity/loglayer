@@ -1,6 +1,6 @@
 {
   "name": "loglayer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A wrapper around logging libraries to provide a consistent way to specify context, metadata, and errors.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

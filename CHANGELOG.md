@@ -1,3 +1,14 @@
+## 1.2.1 - Tue Aug 09 2022 01:50:05
+
+**Contributor:** Theo Gravity
+
+- Fix issue where data is lost if fieldName for context and metadata is the same (#3)
+
+If you configure the context and metadata fieldName to have the same name,
+only the metadata is captured, while the context is lost.
+
+The data is now merged into the shared field.
+
 ## 1.1.1 - Mon Jun 13 2022 22:14:21
 
 **Contributor:** Theo Gravity
