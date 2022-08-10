@@ -93,6 +93,22 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
     this.formatLog(LogLevel.trace, messages)
   }
 
+  /**
+   * All logging inputs are dropped and stops sending logs to the logging library.
+   */
+  disableLogging() {
+    this.structuredLogger._config.enabled = false
+    return this
+  }
+
+  /**
+   * Enable sending logs to the logging library.
+   */
+  enableLogging() {
+    this.structuredLogger._config.enabled = true
+    return this
+  }
+
   private formatLog(logLevel: LogLevel, params: any[]) {
     const { error: errConfig } = this.structuredLogger._config
 

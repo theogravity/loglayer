@@ -16,4 +16,12 @@ export class MockLogBuilder implements ILogBuilder {
   trace(...messages: MessageDataType[]): void {}
 
   warn(...messages: MessageDataType[]): void {}
+
+  enableLogging() {
+    return this
+  }
+
+  disableLogging() {
+    return this
+  }
 }

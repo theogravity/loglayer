@@ -34,4 +34,12 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
   getContext(): Record<string, any> {
     return {}
   }
+
+  enableLogging() {
+    return this
+  }
+
+  disableLogging() {
+    return this
+  }
 }

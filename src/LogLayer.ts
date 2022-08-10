@@ -20,6 +20,7 @@ interface FormatLogParams {
 }
 
 export interface LogLayerInternalConfig<ErrorType> {
+  enabled: boolean
   error: LogLayerErrorConfig<ErrorType>
   metadata: LogLayerMetadataConfig
   context: LogLayerContextConfig
@@ -41,13 +42,14 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
   _config: LogLayerInternalConfig<ErrorType>
 
-  constructor({ logger, error, context, metadata, hooks }: LogLayerConfig<ErrorType>) {
+  constructor({ enabled, logger, error, context, metadata, hooks }: LogLayerConfig<ErrorType>) {
     this.loggerInstance = logger.instance
     this.loggerType = logger?.type || LoggerType.OTHER
 
     this.context = {}
     this.hasContext = false
     this._config = {
+      enabled: enabled ?? true,
       error: error || {},
       context: context || {},
       metadata: metadata || {},
@@ -204,6 +206,22 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   /**
+   * All logging inputs are dropped and stops sending logs to the logging library.
+   */
+  disableLogging() {
+    this._config.enabled = false
+    return this
+  }
+
+  /**
+   * Enable sending logs to the logging library.
+   */
+  enableLogging() {
+    this._config.enabled = true
+    return this
+  }
+
+  /**
    * Returns the underlying log instance
    */
   getLoggerInstance(): ExternalLogger {
@@ -251,6 +269,10 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   _formatLog({ logLevel, params = [], data = null }: FormatLogParams) {
+    if (!this._config.enabled) {
+      return
+    }
+
     const hasObjData = !!data || this.hasContext
     let d = {}
 

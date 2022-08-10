@@ -70,6 +70,42 @@ describe('loglayer general tests', () => {
     })
   })
 
+  it('should toggle log output', () => {
+    const log = getLogger({ enabled: false })
+    const genericLogger = log.getLoggerInstance()
+
+    log.info('test')
+    expect(genericLogger.getLine()).not.toBeDefined()
+
+    log.enableLogging()
+    log.info('test')
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: 'info',
+        data: ['test'],
+      }),
+    )
+
+    log.disableLogging()
+    log.info('test')
+    expect(genericLogger.getLine()).not.toBeDefined()
+
+    // Test LogBuilder
+    log.enableLogging()
+    log.withMetadata({}).disableLogging().info('test')
+    expect(genericLogger.getLine()).not.toBeDefined()
+
+    // This doesn't immediately enable log output
+    log.withMetadata({}).enableLogging().info('test')
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: 'info',
+        data: [{}, 'test'],
+      }),
+    )
+  })
+
   it('should include context', () => {
     const log = getLogger()
     const genericLogger = log.getLoggerInstance()
