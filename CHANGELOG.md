@@ -1,3 +1,15 @@
+## 1.3.2 - Wed Aug 10 2022 02:24:37
+
+**Contributor:** Theo Gravity
+
+- Add `setHooks()` method (#5)
+
+Adds a new method on `LogLayer` called `setHooks()` that allows
+hooks to be set or updated after creation of the `LogLayer`.
+
+Useful as an alternative to using configuration on init to set
+a hook
+
 ## 1.3.1 - Wed Aug 10 2022 02:01:35
 
 **Contributor:** Theo Gravity
