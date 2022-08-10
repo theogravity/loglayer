@@ -66,6 +66,8 @@ logLayer
       - [Supported log library types](#supported-log-library-types)
       - [Serializing errors](#serializing-errors)
       - [Data output options](#data-output-options)
+  - [Hooks](#hooks)
+    - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
   - [Logging messages](#logging-messages)
   - [Including context with each log message](#including-context-with-each-log-message)
     - [Getting context](#getting-context)
@@ -311,6 +313,25 @@ interface LogLayerConfig {
      */
     fieldName?: string
   }
+  hooks?: {
+    /**
+     * Called after the assembly of the data object that contains
+     * the metadata / context / error data before being sent to the destination logging
+     * library.
+     *
+     * - The shape of `data` varies depending on your `fieldName` configuration
+     * for metadata / context / error.
+     * - If data was not found for assembly, `undefined` is used as the `data` input.
+     * - You can also create your own object and return it to be sent to the logging library.
+     *
+     * @param Object [data] The object containing metadata / context / error data. This
+     * is null if there is no object with data.
+     *
+     * @returns [Object] The object to be sent to the destination logging
+     * library or null / undefined to not pass an object through.
+     */
+    onBeforeDataOut?: HookAssembledDataFn
+  }
 }
 ```
 
@@ -430,6 +451,45 @@ The same log commands would now be formatted as:
   "context": {
     "reqId": 1234
   }
+}
+```
+
+### Hooks
+
+#### Modify / create object data before being sent to the logging library
+
+`(data?: Record<string, any>) => Record<string, any> | null | undefined`
+
+The callback `onBeforeDataOut` can be used to modify the data object
+that contains the context / metadata / error data or create a custom object
+before it is sent out to the logging library.
+
+```typescript
+import { LoggerType, LogLayer, HookAssembledDataFn } from 'loglayer'
+
+const onBeforeDataOut: HookAssembledDataFn = (data) => {
+  if (data) {
+    data.modified = true 
+  }
+  
+  return data 
+}
+
+const log = new LogLayer({
+  ...
+  hooks: {
+    onBeforeDataOut,
+  }
+})
+
+log.withContext({ test: 'data' }).info('this is a test message')
+```
+
+```json
+{
+  "test": "data",
+  "modified": true,
+  "msg": "this is a test message"
 }
 ```
 

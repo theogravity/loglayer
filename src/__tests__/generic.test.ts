@@ -1,4 +1,4 @@
-import { LoggerType, LogLayerConfig, LogLevel } from '../types'
+import { HookBeforeDataOutFn, LoggerType, LogLayerConfig, LogLevel } from '../types'
 import { LogLayer } from '../LogLayer'
 
 class GenericLoggingLib {
@@ -243,6 +243,78 @@ describe('loglayer general tests', () => {
   })
 
   describe('config options', () => {
+    describe('hooks config', () => {
+      it('should call onBeforeDataOut with context', () => {
+        const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
+          if (data) {
+            data.modified = true
+          }
+
+          return data
+        }
+
+        const log = getLogger({
+          hooks: {
+            onBeforeDataOut,
+          },
+        })
+        const genericLogger = log.getLoggerInstance()
+        const e = new Error('err')
+
+        log.withContext({
+          contextual: 'data',
+        })
+
+        log
+          .withError(e)
+          .withMetadata({
+            situational: 1234,
+          })
+          .info('combined data')
+
+        expect(genericLogger.getLine()).toStrictEqual(
+          expect.objectContaining({
+            level: LogLevel.info,
+            data: [
+              {
+                err: e,
+                contextual: 'data',
+                situational: 1234,
+                modified: true,
+              },
+              'combined data',
+            ],
+          }),
+        )
+      })
+
+      it('should call onBeforeDataOut with without data', () => {
+        const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
+          if (data) {
+            data.modified = true
+          }
+
+          return data
+        }
+
+        const log = getLogger({
+          hooks: {
+            onBeforeDataOut,
+          },
+        })
+        const genericLogger = log.getLoggerInstance()
+
+        log.info('no data')
+
+        expect(genericLogger.getLine()).toStrictEqual(
+          expect.objectContaining({
+            level: LogLevel.info,
+            data: ['no data'],
+          }),
+        )
+      })
+    })
+
     describe('error config', () => {
       it('should use a custom serializer and field name', () => {
         const log = getLogger({

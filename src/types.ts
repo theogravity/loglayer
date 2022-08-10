@@ -167,6 +167,30 @@ export interface LogLayerMetadataConfig {
   fieldName?: string
 }
 
+export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string, any>> = (
+  data?: Data,
+) => Record<string, any> | null | undefined
+
+export interface LogLayerHooksConfig {
+  /**
+   * Called after the assembly of the data object that contains
+   * the metadata / context / error data before being sent to the destination logging
+   * library.
+   *
+   * - The shape of `data` varies depending on your `fieldName` configuration
+   * for metadata / context / error.
+   * - If data was not found for assembly, `undefined` is used as the `data` input.
+   * - You can also create your own object and return it to be sent to the logging library.
+   *
+   * @param Object [data] The object containing metadata / context / error data. This
+   * is null if there is no object with data.
+   *
+   * @returns [Object] The object to be sent to the destination logging
+   * library or null / undefined to not pass an object through.
+   */
+  onBeforeDataOut?: HookBeforeDataOutFn
+}
+
 export interface LogLayerConfig<ErrorType = ErrorDataType> {
   logger: {
     /**
@@ -181,4 +205,5 @@ export interface LogLayerConfig<ErrorType = ErrorDataType> {
   error?: LogLayerErrorConfig<ErrorType>
   metadata?: LogLayerMetadataConfig
   context?: LogLayerContextConfig
+  hooks?: LogLayerHooksConfig
 }
