@@ -69,6 +69,7 @@ logLayer
   - [Hooks](#hooks)
     - [Set / update hooks outside of configuration](#set--update-hooks-outside-of-configuration)
     - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
+  - [Disable / enable logging](#disable--enable-logging)
   - [Logging messages](#logging-messages)
   - [Including context with each log message](#including-context-with-each-log-message)
     - [Getting context](#getting-context)
@@ -262,6 +263,15 @@ Generics (all are optional):
 
 ```typescript
 interface LogLayerConfig {
+  /**
+   * Set to false to drop all log input and stop sending to the logging
+   * library.
+   *
+   * Can be re-enabled with `enableLogging()`.
+   *
+   * Default is `true`.
+   */
+  enabled?: boolean
   logger: {
     /**
      * The instance of the logging library to send log data and messages to
@@ -500,6 +510,11 @@ log.withContext({ test: 'data' }).info('this is a test message')
   "msg": "this is a test message"
 }
 ```
+
+### Disable / enable logging
+
+- `LogLayer#enableLogging(): LogLayer`
+- `LogLayer#disableLogging(): LogLayer`
 
 ### Logging messages
 

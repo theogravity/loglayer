@@ -192,6 +192,15 @@ export interface LogLayerHooksConfig {
 }
 
 export interface LogLayerConfig<ErrorType = ErrorDataType> {
+  /**
+   * Set to false to drop all log input and stop sending to the logging
+   * library.
+   *
+   * Can be re-enabled with `enableLogging()`.
+   *
+   * Default is `true`.
+   */
+  enabled?: boolean
   logger: {
     /**
      * The instance of the logging library to send log data and messages to
