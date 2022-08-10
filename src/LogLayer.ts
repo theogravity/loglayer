@@ -7,6 +7,7 @@ import {
   LogLayerConfig,
   LogLayerContextConfig,
   LogLayerErrorConfig,
+  LogLayerHooksConfig,
   LogLayerMetadataConfig,
   LogLevel,
   MessageDataType,
@@ -22,6 +23,7 @@ export interface LogLayerInternalConfig<ErrorType> {
   error: LogLayerErrorConfig<ErrorType>
   metadata: LogLayerMetadataConfig
   context: LogLayerContextConfig
+  hooks: LogLayerHooksConfig
 }
 
 /**
@@ -39,7 +41,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
   _config: LogLayerInternalConfig<ErrorType>
 
-  constructor({ logger, error, context, metadata }: LogLayerConfig<ErrorType>) {
+  constructor({ logger, error, context, metadata, hooks }: LogLayerConfig<ErrorType>) {
     this.loggerInstance = logger.instance
     this.loggerType = logger?.type || LoggerType.OTHER
 
@@ -49,6 +51,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       error: error || {},
       context: context || {},
       metadata: metadata || {},
+      hooks: hooks || {},
     }
 
     if (!this._config.error.fieldName) {
@@ -260,7 +263,11 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       }
     }
 
-    if (hasObjData) {
+    if (this._config.hooks.onBeforeDataOut) {
+      d = this._config.hooks.onBeforeDataOut(hasObjData ? d : undefined)
+    }
+
+    if (d && hasObjData) {
       switch (this.loggerType) {
         case LoggerType.WINSTON:
           // Winston wants the data object to be the last parameter
