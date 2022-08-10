@@ -1,3 +1,13 @@
+## 1.3.3 - Wed Aug 10 2022 04:17:36
+
+**Contributor:** Theo Gravity
+
+- Add config option and methods to disable / enable logging (#6)
+
+This adds an optional config option called `enabled`, when set to `false`, will stop log output.
+
+Corresponding methods `enableLogging()` and `disableLogging()` have also been added.
+
 ## 1.3.2 - Wed Aug 10 2022 02:24:37
 
 **Contributor:** Theo Gravity
