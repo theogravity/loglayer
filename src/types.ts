@@ -178,7 +178,7 @@ export interface LogLayerHooksConfig {
    * library.
    *
    * - The shape of `data` varies depending on your `fieldName` configuration
-   * for metadata / context / error.
+   * for metadata / context / error. The metadata / context / error data is a *shallow* clone.
    * - If data was not found for assembly, `undefined` is used as the `data` input.
    * - You can also create your own object and return it to be sent to the logging library.
    *

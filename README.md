@@ -67,6 +67,7 @@ logLayer
       - [Serializing errors](#serializing-errors)
       - [Data output options](#data-output-options)
   - [Hooks](#hooks)
+    - [Set / update hooks outside of configuration](#set--update-hooks-outside-of-configuration)
     - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
   - [Logging messages](#logging-messages)
   - [Including context with each log message](#including-context-with-each-log-message)
@@ -320,7 +321,7 @@ interface LogLayerConfig {
      * library.
      *
      * - The shape of `data` varies depending on your `fieldName` configuration
-     * for metadata / context / error.
+     * for metadata / context / error. The metadata / context / error data is a *shallow* clone.
      * - If data was not found for assembly, `undefined` is used as the `data` input.
      * - You can also create your own object and return it to be sent to the logging library.
      *
@@ -455,6 +456,13 @@ The same log commands would now be formatted as:
 ```
 
 ### Hooks
+
+#### Set / update hooks outside of configuration
+
+`LogLayer#setHooks(hooks: LogLayerHooksConfig)`
+
+Update hook callback definitions. This is an alternative
+to the `hooks` config option. Only hooks defined will be replaced.
 
 #### Modify / create object data before being sent to the logging library
 

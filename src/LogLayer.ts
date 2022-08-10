@@ -86,6 +86,17 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   /**
+   * Update hook callback definitions. This is an alternative
+   * to the `hooks` config option. Only hooks defined will be replaced.
+   */
+  setHooks(hooks: LogLayerHooksConfig) {
+    this._config.hooks = {
+      ...this._config.hooks,
+      ...hooks,
+    }
+  }
+
+  /**
    * Specifies metadata to include with the log message
    */
   withMetadata(metadata: Record<string, any>) {

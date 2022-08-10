@@ -244,6 +244,51 @@ describe('loglayer general tests', () => {
 
   describe('config options', () => {
     describe('hooks config', () => {
+      it('should update hooks', () => {
+        const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
+          if (data) {
+            data.modified = true
+          }
+
+          return data
+        }
+
+        const log = getLogger()
+
+        log.setHooks({
+          onBeforeDataOut,
+        })
+
+        const genericLogger = log.getLoggerInstance()
+        const e = new Error('err')
+
+        log.withContext({
+          contextual: 'data',
+        })
+
+        log
+          .withError(e)
+          .withMetadata({
+            situational: 1234,
+          })
+          .info('combined data')
+
+        expect(genericLogger.getLine()).toStrictEqual(
+          expect.objectContaining({
+            level: LogLevel.info,
+            data: [
+              {
+                err: e,
+                contextual: 'data',
+                situational: 1234,
+                modified: true,
+              },
+              'combined data',
+            ],
+          }),
+        )
+      })
+
       it('should call onBeforeDataOut with context', () => {
         const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
           if (data) {
