@@ -1,3 +1,9 @@
+## 1.3.4 - Mon Aug 22 2022 20:18:36
+
+**Contributor:** Theo Gravity
+
+- Add consoleDebug option (#7)
+
 ## 1.3.3 - Wed Aug 10 2022 04:17:36
 
 **Contributor:** Theo Gravity
