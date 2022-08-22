@@ -272,6 +272,15 @@ interface LogLayerConfig {
    * Default is `true`.
    */
   enabled?: boolean
+  /**
+   * If set to true, will also output messages via console logging before
+   * sending to the logging library.
+   *
+   * Useful for troubleshooting a logging library / transports
+   * to ensure logs are still being created when the underlying
+   * does not print anything.
+   */
+  consoleDebug?: boolean
   logger: {
     /**
      * The instance of the logging library to send log data and messages to

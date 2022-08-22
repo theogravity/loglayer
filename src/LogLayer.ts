@@ -21,6 +21,7 @@ interface FormatLogParams {
 
 export interface LogLayerInternalConfig<ErrorType> {
   enabled: boolean
+  consoleDebug?: boolean
   error: LogLayerErrorConfig<ErrorType>
   metadata: LogLayerMetadataConfig
   context: LogLayerContextConfig
@@ -42,7 +43,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
   _config: LogLayerInternalConfig<ErrorType>
 
-  constructor({ enabled, logger, error, context, metadata, hooks }: LogLayerConfig<ErrorType>) {
+  constructor({ enabled, logger, error, context, metadata, hooks, consoleDebug }: LogLayerConfig<ErrorType>) {
     this.loggerInstance = logger.instance
     this.loggerType = logger?.type || LoggerType.OTHER
 
@@ -50,6 +51,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     this.hasContext = false
     this._config = {
       enabled: enabled ?? true,
+      consoleDebug: consoleDebug ?? false,
       error: error || {},
       context: context || {},
       metadata: metadata || {},
@@ -314,15 +316,27 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
     switch (logLevel) {
       case LogLevel.info:
+        if (this._config.consoleDebug) {
+          console.info(...params)
+        }
         this.loggerInstance.info(...params)
         break
       case LogLevel.warn:
+        if (this._config.consoleDebug) {
+          console.warn(...params)
+        }
         this.loggerInstance.warn(...params)
         break
       case LogLevel.error:
+        if (this._config.consoleDebug) {
+          console.error(...params)
+        }
         this.loggerInstance.error(...params)
         break
       case LogLevel.trace:
+        if (this._config.consoleDebug) {
+          console.debug(...params)
+        }
         // Winston does not have a trace type
         if (this.loggerType === LoggerType.WINSTON) {
           this.loggerInstance.debug(...params)
@@ -331,9 +345,15 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         }
         break
       case LogLevel.debug:
+        if (this._config.consoleDebug) {
+          console.debug(...params)
+        }
         this.loggerInstance.debug(...params)
         break
       default:
+        if (this._config.consoleDebug) {
+          console.log(...params)
+        }
         // @ts-ignore
         this.loggerInstance[logLevel](...params)
     }
