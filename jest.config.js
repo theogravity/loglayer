@@ -6,10 +6,10 @@ module.exports = {
   testPathIgnorePatterns: ['/build', '/node_modules/'],
   coverageThreshold: {
     global: {
-      statements: 94,
-      branches: 85,
+      statements: 91,
+      branches: 84,
       functions: 100,
-      lines: 94,
+      lines: 91,
     },
   },
 }
