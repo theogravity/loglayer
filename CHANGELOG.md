@@ -1,3 +1,11 @@
+## 1.4.1 - Wed Nov 02 2022 05:06:51
+
+**Contributor:** Theo Gravity
+
+- Add support for creating child loggers (#9)
+
+This adds a new method called LogLayer#child() that will create a new LogLayer instance with the original configuration and context data copied over.
+
 ## 1.3.4 - Mon Aug 22 2022 20:18:36
 
 **Contributor:** Theo Gravity
