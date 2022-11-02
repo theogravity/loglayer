@@ -66,6 +66,7 @@ logLayer
       - [Supported log library types](#supported-log-library-types)
       - [Serializing errors](#serializing-errors)
       - [Data output options](#data-output-options)
+  - [Child logger](#child-logger)
   - [Hooks](#hooks)
     - [Set / update hooks outside of configuration](#set--update-hooks-outside-of-configuration)
     - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
@@ -472,6 +473,20 @@ The same log commands would now be formatted as:
     "reqId": 1234
   }
 }
+```
+
+### Child logger
+
+You can create a child logger, which will copy the configuration you used for creating the parent, along with the existing
+context data.
+
+The copied context data is a *shallow copy*.
+
+```
+const parentLog = new LogLayer(<config>).withContext({ some: 'data' })
+
+// Creates a new LogLayer with <config> copied over and the context
+const childLog = parentLog.child()
 ```
 
 ### Hooks

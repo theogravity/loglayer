@@ -115,6 +115,20 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   /**
+   * Creates a new instance of LogLayer but with the initialization
+   * configuration and context copied over.
+   */
+  child() {
+    return new LogLayer<ExternalLogger, ErrorType>({
+      ...this._config,
+      logger: {
+        instance: this.loggerInstance,
+        type: this.loggerType,
+      },
+    }).withContext(this.context)
+  }
+
+  /**
    * Logs only the error object without a log message
    */
   errorOnly(error: ErrorType, opts?: ErrorOnlyOpts) {

@@ -83,6 +83,14 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
    * Returns the context used for the logger
    */
   getContext(): Record<string, any>
+
+  /**
+   * Creates a new instance of LogLayer but with the initialization
+   * configuration and context data copied over.
+   *
+   * The copied context data is a *shallow copy*.
+   */
+  child(): ILogBuilder
 }
 
 export enum LogLevel {
