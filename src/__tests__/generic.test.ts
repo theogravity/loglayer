@@ -53,6 +53,56 @@ function getLogger(config?: Partial<LogLayerConfig>) {
 }
 
 describe('loglayer general tests', () => {
+  it('should create a child logger with only the original configuration and context', () => {
+    const origLog = getLogger().withContext({
+      test: 'context',
+    })
+
+    const parentGenericLogger = origLog.getLoggerInstance()
+
+    // Add additional context to the child logger
+    const childLog = origLog.child().withContext({
+      child: 'childData',
+    })
+
+    childLog.info('test')
+
+    const childGenericLogger = childLog.getLoggerInstance()
+
+    expect(childGenericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [
+          {
+            test: 'context',
+            child: 'childData',
+          },
+          'test',
+        ],
+      }),
+    )
+
+    // make sure the parent logger doesn't have the additional context of the child
+    origLog
+      .withContext({
+        parentContext: 'test-2',
+      })
+      .info('parent-test')
+
+    expect(parentGenericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [
+          {
+            test: 'context',
+            parentContext: 'test-2',
+          },
+          'parent-test',
+        ],
+      }),
+    )
+  })
+
   it('should write messages', () => {
     const log = getLogger()
     const genericLogger = log.getLoggerInstance()

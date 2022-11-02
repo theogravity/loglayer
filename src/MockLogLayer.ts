@@ -42,4 +42,8 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
   disableLogging() {
     return this
   }
+
+  child() {
+    return new MockLogLayer({})
+  }
 }
