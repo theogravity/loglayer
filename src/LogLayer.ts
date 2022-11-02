@@ -125,7 +125,9 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         instance: this.loggerInstance,
         type: this.loggerType,
       },
-    }).withContext(this.context)
+    }).withContext({
+      ...this.context,
+    })
   }
 
   /**
