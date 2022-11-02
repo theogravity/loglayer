@@ -1,3 +1,11 @@
+## 1.4.2 - Wed Nov 02 2022 05:23:14
+
+**Contributor:** Theo Gravity
+
+- Fix issue where `LogLayer#child()` was not creating a shallow copy of context (#10)
+
+The documentation says the context should be shallow copied, but it wasn't. Now it is.
+
 ## 1.4.1 - Wed Nov 02 2022 05:06:51
 
 **Contributor:** Theo Gravity
