@@ -26,6 +26,7 @@ export interface LogLayerInternalConfig<ErrorType> {
   metadata: LogLayerMetadataConfig
   context: LogLayerContextConfig
   hooks: LogLayerHooksConfig
+  prefix?: string
 }
 
 /**
@@ -43,7 +44,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
   _config: LogLayerInternalConfig<ErrorType>
 
-  constructor({ enabled, logger, error, context, metadata, hooks, consoleDebug }: LogLayerConfig<ErrorType>) {
+  constructor({ enabled, logger, error, context, metadata, hooks, consoleDebug, prefix }: LogLayerConfig<ErrorType>) {
     this.loggerInstance = logger.instance
     this.loggerType = logger?.type || LoggerType.OTHER
 
@@ -56,6 +57,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       context: context || {},
       metadata: metadata || {},
       hooks: hooks || {},
+      prefix: prefix || '',
     }
 
     if (!this._config.error.fieldName) {
@@ -65,6 +67,16 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     if (!this._config.error.copyMsgOnOnlyError) {
       this._config.error.copyMsgOnOnlyError = false
     }
+  }
+
+  /**
+   * Calls child() and sets the prefix to be included with every log message.
+   */
+  withPrefix(prefix: string): LogLayer<ExternalLogger, ErrorType> {
+    const logger = this.child()
+    logger._config.prefix = prefix
+
+    return logger
   }
 
   /**
@@ -119,14 +131,24 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
    * configuration and context copied over.
    */
   child() {
+    if (this.hasContext) {
+      return new LogLayer<ExternalLogger, ErrorType>({
+        ...this._config,
+        logger: {
+          instance: this.loggerInstance,
+          type: this.loggerType,
+        },
+      }).withContext({
+        ...this.context,
+      })
+    }
+
     return new LogLayer<ExternalLogger, ErrorType>({
       ...this._config,
       logger: {
         instance: this.loggerInstance,
         type: this.loggerType,
       },
-    }).withContext({
-      ...this.context,
     })
   }
 
@@ -180,6 +202,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
    * the first parameter would be used.
    */
   info(...messages: MessageDataType[]) {
+    this._formatMessage(messages)
     this._formatLog({ logLevel: LogLevel.info, params: messages })
   }
 
@@ -190,6 +213,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
    * the first parameter would be used.
    */
   warn(...messages: MessageDataType[]) {
+    this._formatMessage(messages)
     this._formatLog({ logLevel: LogLevel.warn, params: messages })
   }
 
@@ -200,6 +224,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
    * the first parameter would be used.
    */
   error(...messages: MessageDataType[]) {
+    this._formatMessage(messages)
     this._formatLog({ logLevel: LogLevel.error, params: messages })
   }
 
@@ -210,6 +235,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
    * the first parameter would be used.
    */
   debug(...messages: MessageDataType[]) {
+    this._formatMessage(messages)
     this._formatLog({ logLevel: LogLevel.debug, params: messages })
   }
 
@@ -220,6 +246,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
    * the first parameter would be used.
    */
   trace(...messages: MessageDataType[]) {
+    this._formatMessage(messages)
     this._formatLog({ logLevel: LogLevel.trace, params: messages })
   }
 
@@ -284,6 +311,12 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     }
 
     return {}
+  }
+
+  _formatMessage(messages = []) {
+    if (this._config.prefix && typeof messages[0] === 'string') {
+      messages[0] = `${this._config.prefix} ${messages[0]}`
+    }
   }
 
   _formatLog({ logLevel, params = [], data = null }: FormatLogParams) {

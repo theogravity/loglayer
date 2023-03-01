@@ -50,6 +50,7 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   info(...messages: MessageDataType[]) {
+    this.structuredLogger._formatMessage(messages)
     this.formatLog(LogLevel.info, messages)
   }
 
@@ -60,6 +61,7 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   warn(...messages: MessageDataType[]) {
+    this.structuredLogger._formatMessage(messages)
     this.formatLog(LogLevel.warn, messages)
   }
 
@@ -70,6 +72,7 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   error(...messages: MessageDataType[]) {
+    this.structuredLogger._formatMessage(messages)
     this.formatLog(LogLevel.error, messages)
   }
 
@@ -80,6 +83,7 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   debug(...messages: MessageDataType[]) {
+    this.structuredLogger._formatMessage(messages)
     this.formatLog(LogLevel.debug, messages)
   }
 
@@ -90,6 +94,7 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   trace(...messages: MessageDataType[]) {
+    this.structuredLogger._formatMessage(messages)
     this.formatLog(LogLevel.trace, messages)
   }
 
@@ -122,6 +127,6 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
       data[errConfig.fieldName] = errConfig.serializer ? errConfig.serializer(this.err) : this.err
     }
 
-    this.structuredLogger._formatLog({ logLevel: logLevel, params: params, data: hasData ? data : null })
+    this.structuredLogger._formatLog({ logLevel, params, data: hasData ? data : null })
   }
 }

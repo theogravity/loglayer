@@ -53,6 +53,10 @@ export interface ILogBuilder {
 export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, ErrorType = ErrorDataType>
   extends ILogBuilder {
   /**
+   * Calls child() and sets the prefix to be included with every log message.
+   */
+  withPrefix(string: string): ILogBuilder
+  /**
    * Appends context data which will be included with
    * every log entry.
    */
@@ -200,6 +204,10 @@ export interface LogLayerHooksConfig {
 }
 
 export interface LogLayerConfig<ErrorType = ErrorDataType> {
+  /**
+   * The prefix to prepend to all log messages
+   */
+  prefix?: string
   /**
    * Set to false to drop all log input and stop sending to the logging
    * library.

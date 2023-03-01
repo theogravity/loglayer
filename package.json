@@ -1,7 +1,7 @@
 {
   "name": "loglayer",
-  "version": "1.4.2",
-  "description": "A wrapper around logging libraries to provide a consistent way to specify context, metadata, and errors.",
+  "version": "1.5.0",
+  "description": "A abstraction / wrapper around logging libraries to provide a consistent way to specify context, metadata, and errors.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -54,7 +54,8 @@
     "standard",
     "wrapper",
     "serialize",
-    "error"
+    "error",
+    "abstraction"
   ],
   "dependencies": {},
   "devDependencies": {
@@ -93,7 +94,7 @@
     "ts-jest": "^28.0.5",
     "ts-node": "^10.8.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^4.7.3",
+    "typescript": "^4.9.5",
     "winston": "^3.7.2"
   },
   "lint-staged": {

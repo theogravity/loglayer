@@ -33,6 +33,15 @@ describe('structured logger with roarr', () => {
     log.info('this is a test message')
   })
 
+  it('should log a message', () => {
+    expect.assertions(1)
+    const log = getLoggerInstance((message) => {
+      expect(message.message).toBe('[testing] this is a test message')
+    })
+
+    log.withPrefix('[testing]').info('this is a test message')
+  })
+
   it('should include context', () => {
     expect.assertions(2)
 

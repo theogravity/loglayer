@@ -19,6 +19,10 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
 
   metadataOnly(metadata: Record<string, any>, logLevel: LogLevel): void {}
 
+  withPrefix(prefix: string) {
+    return new MockLogLayer({})
+  }
+
   withContext(context: Record<string, any>): ILogLayer<any, ErrorType> {
     return this
   }

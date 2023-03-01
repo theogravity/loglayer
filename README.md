@@ -72,6 +72,9 @@ logLayer
     - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
   - [Disable / enable logging](#disable--enable-logging)
   - [Logging messages](#logging-messages)
+  - [Including a prefix with each log message](#including-a-prefix-with-each-log-message)
+    - [Via configuration](#via-configuration)
+    - [Create a child logger with the prefix](#create-a-child-logger-with-the-prefix)
   - [Including context with each log message](#including-context-with-each-log-message)
     - [Getting context](#getting-context)
   - [Logging metadata](#logging-metadata)
@@ -282,6 +285,10 @@ interface LogLayerConfig {
    * does not print anything.
    */
   consoleDebug?: boolean
+  /**
+   * The prefix to prepend to all log messages
+   */
+  prefix?: string
   logger: {
     /**
      * The instance of the logging library to send log data and messages to
@@ -563,6 +570,29 @@ log.info('this is a message')
 // For example, in roarr, the subsequent parameters after the first are for sprintf interpretation only.
 // Other libraries do nothing with additional parameters.
 log.info('request id: %s', id)
+```
+
+### Including a prefix with each log message
+
+#### Via configuration
+
+```typescript
+const log = new LogLayer({ prefix: '[testing]' })
+```
+
+#### Create a child logger with the prefix
+
+`LogLayer#withPrefix(prefix: string): LogLayer`
+
+This calls `LogLayer#child()` with `prefix` set as part of the configuration.
+
+```typescript
+const parentLog = new LogLayer(<config>)
+
+const childLog = parentLog.withPrefix('[testing]')
+
+// The message will be "[testing] this is a request"
+childLog.info('this is a request')
 ```
 
 ### Including context with each log message

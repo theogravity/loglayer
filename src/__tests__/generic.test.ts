@@ -53,6 +53,23 @@ function getLogger(config?: Partial<LogLayerConfig>) {
 }
 
 describe('loglayer general tests', () => {
+  it('should assign a prefix to messages', () => {
+    const log = getLogger().withPrefix('[testing]')
+    const genericLogger = log.getLoggerInstance()
+    const levels = ['info', 'warn', 'error', 'debug', 'trace']
+
+    levels.forEach((level, idx) => {
+      log[level](`${level} message`, idx)
+
+      expect(genericLogger.getLine()).toStrictEqual(
+        expect.objectContaining({
+          level,
+          data: [`[testing] ${level} message`, idx],
+        }),
+      )
+    })
+  })
+
   it('should create a child logger with only the original configuration and context', () => {
     const origLog = getLogger().withContext({
       test: 'context',

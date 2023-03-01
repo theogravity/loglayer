@@ -19,3 +19,7 @@ coverage/
 api-doc.md
 docs/
 typedoc.js
+livetests/
+.eslintignore
+.eslintcache
+.eslintrc.js

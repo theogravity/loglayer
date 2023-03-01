@@ -1,3 +1,11 @@
+## 1.5.0 - Wed Mar 01 2023 13:11:13
+
+**Contributor:** Theo Gravity
+
+- Added log message prefixing
+  * Can be set via `prefix` config option, or `LogLayer#withPrefix()`. See README.md for usage info.
+- Fix issue where `LogLayer#child()` was setting empty context data when context has not been set at all
+
 ## 1.4.2 - Wed Nov 02 2022 05:23:14
 
 **Contributor:** Theo Gravity
