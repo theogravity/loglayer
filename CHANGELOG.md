@@ -1,3 +1,11 @@
+## 1.6.0 - Wed Mar 15 2023 13:25:45
+
+**Contributor:** Theo Gravity
+
+- Add `shouldSendToLogger` hook (#11)
+
+This hook allows you to conditionally send a log entry or not to the logger.
+
 ## 1.5.0 - Wed Mar 01 2023 13:11:13
 
 **Contributor:** Theo Gravity
