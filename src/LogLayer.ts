@@ -351,6 +351,14 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       d = this._config.hooks.onBeforeDataOut(hasObjData ? d : undefined)
     }
 
+    if (this._config.hooks.shouldSendToLogger) {
+      const shouldSend = this._config.hooks.shouldSendToLogger(params, hasObjData ? d : undefined)
+
+      if (!shouldSend) {
+        return
+      }
+    }
+
     if (d && hasObjData) {
       switch (this.loggerType) {
         case LoggerType.WINSTON:

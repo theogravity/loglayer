@@ -70,6 +70,7 @@ logLayer
   - [Hooks](#hooks)
     - [Set / update hooks outside of configuration](#set--update-hooks-outside-of-configuration)
     - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
+    - [Conditionally send or not send an entry to the logging library](#conditionally-send-or-not-send-an-entry-to-the-logging-library)
   - [Disable / enable logging](#disable--enable-logging)
   - [Logging messages](#logging-messages)
   - [Including a prefix with each log message](#including-a-prefix-with-each-log-message)
@@ -353,12 +354,24 @@ interface LogLayerConfig {
      * - You can also create your own object and return it to be sent to the logging library.
      *
      * @param Object [data] The object containing metadata / context / error data. This
-     * is null if there is no object with data.
+     * is `undefined` if there is no object with data.
      *
      * @returns [Object] The object to be sent to the destination logging
      * library or null / undefined to not pass an object through.
      */
     onBeforeDataOut?: HookAssembledDataFn
+    /**
+     * Called before the data is sent to the logger. Return false to omit sending
+     * to the logger. Useful for isolating specific log messages for debugging / troubleshooting.
+     *
+     * @param MessageDataType[] messages An array of message data that corresponds to what was entered in
+     * info(...messages), warn(...messages), error(...messages), debug(...messages), etc.
+     * @param Object [data] The data object that contains the context / metadata / error data.
+     This is `undefined` if there is no data. If `onBeforeDataOut` was defined, uses the data processed from it.
+     *
+     * @returns [boolean] If true, sends data to the logger, if false does not.
+     */
+    shouldSendToLogger?: HookShouldSendToLoggerFn
   }
 }
 ```
@@ -542,6 +555,45 @@ log.withContext({ test: 'data' }).info('this is a test message')
   "modified": true,
   "msg": "this is a test message"
 }
+```
+
+#### Conditionally send or not send an entry to the logging library
+
+`(messages: MessageDataType[], data?: Data) => boolean`
+
+The callback `shouldSendToLogger` is called before the data is sent to the logger. 
+Return false to omit sending to the logger. Useful for isolating specific log 
+messages for debugging / troubleshooting.
+
+*Parameters*
+
+- `messages`: The parameters sent via `info()`, `warn()`, `error()`, `debug()`, etc. Most will use `messages[0]`.
+- `[data]`: The data object that contains the context / metadata / error data. This is `null` if there is no data. 
+  If `onBeforeDataOut` was defined, uses the data processed from it.
+
+```typescript
+import { LoggerType, LogLayer, HookAssembledDataFn } from 'loglayer'
+
+const shouldSendToLogger: boolean = (messages, data) => {
+  // Define custom logic here (ex: regex) to determine if the log should be sent out or not
+  
+  // Read the first parameter of info() / warn() / error() / debug() / etc
+  if (messages[0] === 'do not send out') {
+    return false;
+  }
+  
+  return true;
+}
+
+const log = new LogLayer({
+  ...
+  hooks: {
+    shouldSendToLogger,
+  }
+})
+
+// Will not send the log entry to the logger
+log.info('do not send out')
 ```
 
 ### Disable / enable logging

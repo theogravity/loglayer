@@ -1,4 +1,4 @@
-import { HookBeforeDataOutFn, LoggerType, LogLayerConfig, LogLevel } from '../types'
+import { HookBeforeDataOutFn, HookShouldSendToLoggerFn, LoggerType, LogLayerConfig, LogLevel } from '../types'
 import { LogLayer } from '../LogLayer'
 
 class GenericLoggingLib {
@@ -392,74 +392,105 @@ describe('loglayer general tests', () => {
         )
       })
 
-      it('should call onBeforeDataOut with context', () => {
-        const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
-          if (data) {
-            data.modified = true
+      describe('onBeforeDataOut', () => {
+        it('should call onBeforeDataOut with context', () => {
+          const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
+            if (data) {
+              data.modified = true
+            }
+
+            return data
           }
 
-          return data
-        }
-
-        const log = getLogger({
-          hooks: {
-            onBeforeDataOut,
-          },
-        })
-        const genericLogger = log.getLoggerInstance()
-        const e = new Error('err')
-
-        log.withContext({
-          contextual: 'data',
-        })
-
-        log
-          .withError(e)
-          .withMetadata({
-            situational: 1234,
+          const log = getLogger({
+            hooks: {
+              onBeforeDataOut,
+            },
           })
-          .info('combined data')
+          const genericLogger = log.getLoggerInstance()
+          const e = new Error('err')
 
-        expect(genericLogger.getLine()).toStrictEqual(
-          expect.objectContaining({
-            level: LogLevel.info,
-            data: [
-              {
-                err: e,
-                contextual: 'data',
-                situational: 1234,
-                modified: true,
-              },
-              'combined data',
-            ],
-          }),
-        )
+          log.withContext({
+            contextual: 'data',
+          })
+
+          log
+            .withError(e)
+            .withMetadata({
+              situational: 1234,
+            })
+            .info('combined data')
+
+          expect(genericLogger.getLine()).toStrictEqual(
+            expect.objectContaining({
+              level: LogLevel.info,
+              data: [
+                {
+                  err: e,
+                  contextual: 'data',
+                  situational: 1234,
+                  modified: true,
+                },
+                'combined data',
+              ],
+            }),
+          )
+        })
+
+        it('should call onBeforeDataOut with without data', () => {
+          const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
+            if (data) {
+              data.modified = true
+            }
+
+            return data
+          }
+
+          const log = getLogger({
+            hooks: {
+              onBeforeDataOut,
+            },
+          })
+          const genericLogger = log.getLoggerInstance()
+
+          log.info('no data')
+
+          expect(genericLogger.getLine()).toStrictEqual(
+            expect.objectContaining({
+              level: LogLevel.info,
+              data: ['no data'],
+            }),
+          )
+        })
       })
 
-      it('should call onBeforeDataOut with without data', () => {
-        const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
-          if (data) {
-            data.modified = true
+      describe('shouldSendToLogger', () => {
+        it('should not send to the logger', () => {
+          const shouldSendToLogger: HookShouldSendToLoggerFn = (messages, data) => {
+            if (messages[0] === 0) {
+              return false
+            }
+
+            return true
           }
 
-          return data
-        }
+          const log = getLogger({
+            hooks: {
+              shouldSendToLogger,
+            },
+          })
+          const genericLogger = log.getLoggerInstance()
 
-        const log = getLogger({
-          hooks: {
-            onBeforeDataOut,
-          },
+          log.info(0)
+          expect(genericLogger.getLine()).toBeUndefined()
+          log.info(1)
+          expect(genericLogger.getLine()).toStrictEqual(
+            expect.objectContaining({
+              level: LogLevel.info,
+              data: [1],
+            }),
+          )
         })
-        const genericLogger = log.getLoggerInstance()
-
-        log.info('no data')
-
-        expect(genericLogger.getLine()).toStrictEqual(
-          expect.objectContaining({
-            level: LogLevel.info,
-            data: ['no data'],
-          }),
-        )
       })
     })
 

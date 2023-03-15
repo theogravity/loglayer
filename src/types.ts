@@ -183,6 +183,11 @@ export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string
   data?: Data,
 ) => Record<string, any> | null | undefined
 
+export type HookShouldSendToLoggerFn<Data extends Record<string, any> = Record<string, any>> = (
+  messages: MessageDataType[],
+  data?: Data,
+) => boolean
+
 export interface LogLayerHooksConfig {
   /**
    * Called after the assembly of the data object that contains
@@ -195,12 +200,24 @@ export interface LogLayerHooksConfig {
    * - You can also create your own object and return it to be sent to the logging library.
    *
    * @param Object [data] The object containing metadata / context / error data. This
-   * is null if there is no object with data.
+   * is `undefined` if there is no object with data.
    *
    * @returns [Object] The object to be sent to the destination logging
    * library or null / undefined to not pass an object through.
    */
   onBeforeDataOut?: HookBeforeDataOutFn
+  /**
+   * Called before the data is sent to the logger. Return false to omit sending
+   * to the logger. Useful for isolating specific log messages for debugging / troubleshooting.
+   *
+   * @param MessageDataType[] messages An array of message data that corresponds to what was entered in
+   * info(...messages), warn(...messages), error(...messages), debug(...messages), etc.
+   * @param Object [data] The data object that contains the context / metadata / error data.
+   * This is `undefined` if there is no data. If `onBeforeDataOut` was defined, uses the data processed from it.
+   *
+   * @returns [boolean] If true, sends data to the logger, if false does not.
+   */
+  shouldSendToLogger?: HookShouldSendToLoggerFn
 }
 
 export interface LogLayerConfig<ErrorType = ErrorDataType> {
