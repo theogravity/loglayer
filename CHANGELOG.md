@@ -1,3 +1,10 @@
+## 2.0.1 - Mon Mar 20 2023 13:19:47
+
+**Contributor:** Theo Gravity
+
+- Fixed issue where `shouldSendToLogger` may not send logs out because `messages` may have been manipulated. `messages`
+is now a copy of the original.
+
 ## 2.0.0 - Mon Mar 20 2023 12:25:30
 
 **Contributor:** Theo Gravity

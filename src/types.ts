@@ -184,8 +184,18 @@ export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string
 ) => Record<string, any> | null | undefined
 
 export interface HookShouldSendToLoggerParams<Data extends Record<string, any>> {
+  /**
+   * Message data that is copied from the original.
+   */
   messages: MessageDataType[]
+  /**
+   * Log level of the message
+   */
   logLevel: LogLevel
+  /**
+   * The object containing metadata / context / error data. This
+   * is `undefined` if there is no object with data.
+   */
   data?: Data
 }
 

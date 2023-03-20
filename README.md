@@ -567,7 +567,7 @@ messages for debugging / troubleshooting.
 
 *Parameters*
 
-- `messages`: The parameters sent via `info()`, `warn()`, `error()`, `debug()`, etc. Most will use `messages[0]`.
+- `messages`: The parameters sent via `info()`, `warn()`, `error()`, `debug()`, etc. Most will use `messages[0]`. This data is copied from the original.
 - `[data]`: The data object that contains the context / metadata / error data. This is `null` if there is no data. 
   If `onBeforeDataOut` was defined, uses the data processed from it.
 
