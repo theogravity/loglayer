@@ -1,3 +1,13 @@
+## 2.0.0 - Mon Mar 20 2023 12:25:30
+
+**Contributor:** Theo Gravity
+
+*Breaking change*
+
+The `shouldSendToLogger` hook parameter is now an object, and adds in `logLevel` as a property.
+
+See `README.md` for updated usage details.
+
 ## 1.6.0 - Wed Mar 15 2023 13:25:45
 
 **Contributor:** Theo Gravity

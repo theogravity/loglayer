@@ -183,9 +183,14 @@ export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string
   data?: Data,
 ) => Record<string, any> | null | undefined
 
+export interface HookShouldSendToLoggerParams<Data extends Record<string, any>> {
+  messages: MessageDataType[]
+  logLevel: LogLevel
+  data?: Data
+}
+
 export type HookShouldSendToLoggerFn<Data extends Record<string, any> = Record<string, any>> = (
-  messages: MessageDataType[],
-  data?: Data,
+  params: HookShouldSendToLoggerParams<Data>,
 ) => boolean
 
 export interface LogLayerHooksConfig {

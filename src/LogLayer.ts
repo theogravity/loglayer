@@ -352,7 +352,11 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     }
 
     if (this._config.hooks.shouldSendToLogger) {
-      const shouldSend = this._config.hooks.shouldSendToLogger(params, hasObjData ? d : undefined)
+      const shouldSend = this._config.hooks.shouldSendToLogger({
+        messages: params,
+        data: hasObjData ? d : undefined,
+        logLevel,
+      })
 
       if (!shouldSend) {
         return

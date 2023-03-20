@@ -559,7 +559,7 @@ log.withContext({ test: 'data' }).info('this is a test message')
 
 #### Conditionally send or not send an entry to the logging library
 
-`(messages: MessageDataType[], data?: Data) => boolean`
+`(params: { messages: MessageDataType[], logLevel: LogLevel, data?: Data }) => boolean`
 
 The callback `shouldSendToLogger` is called before the data is sent to the logger. 
 Return false to omit sending to the logger. Useful for isolating specific log 
@@ -574,7 +574,7 @@ messages for debugging / troubleshooting.
 ```typescript
 import { LoggerType, LogLayer, HookAssembledDataFn } from 'loglayer'
 
-const shouldSendToLogger: boolean = (messages, data) => {
+const shouldSendToLogger: boolean = ({ messages }) => {
   // Define custom logic here (ex: regex) to determine if the log should be sent out or not
   
   // Read the first parameter of info() / warn() / error() / debug() / etc

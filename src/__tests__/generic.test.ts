@@ -466,7 +466,7 @@ describe('loglayer general tests', () => {
 
       describe('shouldSendToLogger', () => {
         it('should not send to the logger', () => {
-          const shouldSendToLogger: HookShouldSendToLoggerFn = (messages, data) => {
+          const shouldSendToLogger: HookShouldSendToLoggerFn = ({ messages }) => {
             if (messages[0] === 0) {
               return false
             }
