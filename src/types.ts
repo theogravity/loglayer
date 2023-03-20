@@ -183,7 +183,7 @@ export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string
   data?: Data,
 ) => Record<string, any> | null | undefined
 
-export interface HookShouldSendToLoggerParams<Data extends Record<string, any>> {
+export interface HookShouldSendToLoggerParams<Data extends Record<string, any> = Record<string, any>> {
   /**
    * Message data that is copied from the original.
    */

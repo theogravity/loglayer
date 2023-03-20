@@ -1,3 +1,9 @@
+## 2.0.2 - Mon Mar 20 2023 16:46:04
+
+**Contributor:** Theo Gravity
+
+- Exports the `HookShouldSendToLoggerParams` type and sets a default value for the `Data` generic.
+
 ## 2.0.1 - Mon Mar 20 2023 13:19:47
 
 **Contributor:** Theo Gravity
