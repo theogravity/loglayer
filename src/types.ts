@@ -111,6 +111,7 @@ export enum LogLevel {
 export enum LoggerType {
   OTHER = 'other',
   WINSTON = 'winston',
+  ELECTRON_LOG = 'electronLog',
   ROARR = 'roarr',
   PINO = 'pino',
   BUNYAN = 'bunyan',

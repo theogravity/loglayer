@@ -5,8 +5,8 @@
 ![built with typescript](https://camo.githubusercontent.com/92e9f7b1209bab9e3e9cd8cdf62f072a624da461/68747470733a2f2f666c61742e62616467656e2e6e65742f62616467652f4275696c74253230576974682f547970655363726970742f626c7565)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-Standardize the way you write logs with `loglayer` using your existing logging library 
-(`bunyan` / `winston` / `pino` / `roarr` / etc).
+Standardize the way you write logs with the `loglayer` abstraction using your existing logging library 
+(`bunyan` / `winston` / `pino` / `roarr` / `electron-log` / etc).
 
 Spend less time from having to *define* your logs and spend more writing them.
 
@@ -59,6 +59,7 @@ logLayer
   - [`bunyan`](#bunyan)
   - [`winston`](#winston)
   - [`roarr`](#roarr)
+  - [`electron-log`](#electron-log)
 - [Example integration](#example-integration)
 - [API](#api)
   - [Constructor](#constructor)
@@ -203,6 +204,26 @@ const log = new LogLayer<Logger>({
     serializer: serializeError,
   },
 })
+```
+
+### `electron-log`
+
+You can use `electron-log` with `LogLayer` in your electron app for logging.
+
+[electron-log docs](https://github.com/megahertz/electron-log)
+
+```typescript
+// Main process logger
+import log from 'electron-log/src/main';
+// or Renderer process logger
+// import log from 'electron-log/src/renderer';
+
+const log = new LogLayer({
+  logger: {
+    instance: log,
+    type: LoggerType.ELECTRON_LOG,
+  },
+});
 ```
 
 ## Example integration

@@ -1,5 +1,5 @@
 import { LogBuilder } from './LogBuilder'
-import type { LoggerLibrary, ErrorOnlyOpts } from './types'
+import type { ErrorOnlyOpts, LoggerLibrary } from './types'
 import {
   ErrorDataType,
   ILogLayer,
@@ -365,6 +365,8 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
     if (d && hasObjData) {
       switch (this.loggerType) {
+        // Electron log works like winston
+        case LoggerType.ELECTRON_LOG:
         case LoggerType.WINSTON:
           // Winston wants the data object to be the last parameter
           params.push(d)

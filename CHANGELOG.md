@@ -1,3 +1,9 @@
+## UNRELEASED
+
+**Contributor:** Theo Gravity
+
+- Adds `electron-log` support.
+
 ## 2.0.2 - Mon Mar 20 2023 16:46:04
 
 **Contributor:** Theo Gravity

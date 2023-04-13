@@ -1,6 +1,6 @@
 {
   "name": "loglayer",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A abstraction / wrapper around logging libraries to provide a consistent way to specify context, metadata, and errors.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -55,7 +55,9 @@
     "wrapper",
     "serialize",
     "error",
-    "abstraction"
+    "abstraction",
+    "pino",
+    "electron"
   ],
   "dependencies": {},
   "devDependencies": {
