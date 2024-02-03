@@ -348,7 +348,7 @@ describe('loglayer general tests', () => {
   describe('config options', () => {
     describe('hooks config', () => {
       it('should update hooks', () => {
-        const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
+        const onBeforeDataOut: HookBeforeDataOutFn = ({ data }) => {
           if (data) {
             data.modified = true
           }
@@ -394,7 +394,7 @@ describe('loglayer general tests', () => {
 
       describe('onBeforeDataOut', () => {
         it('should call onBeforeDataOut with context', () => {
-          const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
+          const onBeforeDataOut: HookBeforeDataOutFn = ({ data }) => {
             if (data) {
               data.modified = true
             }
@@ -438,7 +438,7 @@ describe('loglayer general tests', () => {
         })
 
         it('should call onBeforeDataOut with without data', () => {
-          const onBeforeDataOut: HookBeforeDataOutFn = (data) => {
+          const onBeforeDataOut: HookBeforeDataOutFn = ({ data }) => {
             if (data) {
               data.modified = true
             }

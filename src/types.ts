@@ -180,9 +180,17 @@ export interface LogLayerMetadataConfig {
   fieldName?: string
 }
 
-export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string, any>> = (
-  data?: Data,
-) => Record<string, any> | null | undefined
+export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string, any>> = (params: {
+  /**
+   * Log level of the data
+   */
+  logLevel: LogLevel
+  /**
+   * The object containing metadata / context / error data. This
+   * is `undefined` if there is no object with data.
+   */
+  data?: Data
+}) => Record<string, any> | null | undefined
 
 export interface HookShouldSendToLoggerParams<Data extends Record<string, any> = Record<string, any>> {
   /**
@@ -215,8 +223,8 @@ export interface LogLayerHooksConfig {
    * - If data was not found for assembly, `undefined` is used as the `data` input.
    * - You can also create your own object and return it to be sent to the logging library.
    *
-   * @param Object [data] The object containing metadata / context / error data. This
-   * is `undefined` if there is no object with data.
+   * @param Object [params.data] The object containing metadata / context / error data. This is `undefined` if there is no object with data.
+   * @param LogLevel [params.logLevel] The log level of the data.
    *
    * @returns [Object] The object to be sent to the destination logging
    * library or null / undefined to not pass an object through.

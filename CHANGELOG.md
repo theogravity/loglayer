@@ -1,3 +1,11 @@
+## 3.0.0
+
+**Breaking change**
+
+- The hook `onBeforeDataOut` signature has changed
+  * from: `onBeforeDataOut(data)`
+  * to: `onBeforeDataOut({ data, logLevel })`
+
 ## 2.0.3
 
 **Contributor:** Theo Gravity

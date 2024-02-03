@@ -348,7 +348,10 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     }
 
     if (this._config.hooks.onBeforeDataOut) {
-      d = this._config.hooks.onBeforeDataOut(hasObjData ? d : undefined)
+      d = this._config.hooks.onBeforeDataOut({
+        data: hasObjData ? d : undefined,
+        logLevel,
+      })
     }
 
     if (this._config.hooks.shouldSendToLogger) {
