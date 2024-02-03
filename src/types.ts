@@ -180,7 +180,7 @@ export interface LogLayerMetadataConfig {
   fieldName?: string
 }
 
-export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string, any>> = (params: {
+export interface HookBeforeDataOutParams<Data extends Record<string, any> = Record<string, any>> {
   /**
    * Log level of the data
    */
@@ -190,7 +190,11 @@ export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string
    * is `undefined` if there is no object with data.
    */
   data?: Data
-}) => Record<string, any> | null | undefined
+}
+
+export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string, any>> = (
+  params: HookBeforeDataOutParams<Data>,
+) => Record<string, any> | null | undefined
 
 export interface HookShouldSendToLoggerParams<Data extends Record<string, any> = Record<string, any>> {
   /**

@@ -1,3 +1,7 @@
+## 3.0.1
+
+- Created a separate Typescript type for the `onBeforeDataOut` hook parameter, `OnBeforeDataOutParams`.
+
 ## 3.0.0
 
 **Breaking change**
