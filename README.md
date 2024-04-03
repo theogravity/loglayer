@@ -218,7 +218,7 @@ import log from 'electron-log/src/main';
 // or Renderer process logger
 // import log from 'electron-log/src/renderer';
 
-const log = new LogLayer({
+const logger = new LogLayer({
   logger: {
     instance: log,
     type: LoggerType.ELECTRON_LOG,
