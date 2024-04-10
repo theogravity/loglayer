@@ -23,3 +23,4 @@ livetests/
 .eslintignore
 .eslintcache
 .eslintrc.js
+biome.json

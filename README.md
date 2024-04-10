@@ -82,6 +82,9 @@ logLayer
   - [Logging metadata](#logging-metadata)
     - [With a message](#with-a-message)
     - [Standalone](#standalone)
+  - [Muting context / metadata](#muting-context--metadata)
+    - [Via configuration](#via-configuration-1)
+    - [Via method](#via-method)
   - [Logging errors](#logging-errors)
     - [With a message](#with-a-message-1)
     - [Standalone](#standalone-1)
@@ -311,6 +314,14 @@ interface LogLayerConfig {
    * The prefix to prepend to all log messages
    */
   prefix?: string
+  /**
+   * If set to true, will not include context data in the log message.
+   */
+  muteContext?: boolean
+  /**
+   * If set to true, will not include metadata data in the log message.
+   */
+  muteMetadata?: boolean
   logger: {
     /**
      * The instance of the logging library to send log data and messages to
@@ -737,6 +748,30 @@ log.metadataOnly({ some: 'data' })
 // Adjust log level
 log.metadataOnly({ some: 'data' }, LogLevel.warn)
 ```
+
+### Muting context / metadata
+
+Sometimes you may want to disable context or metadata from being included in the log message.
+
+Useful for local development or troubleshooting where you may not want to see the context or metadata due to verbosity.
+
+Setting the mute flag is persistent until the unmute method is called.
+
+#### Via configuration
+
+- `muteContext`: Disables context from being included in the log message.
+- `muteMetadata`: Disables metadata from being included in the log message.
+
+```typescript
+const log = new LogLayer({ muteContext: true, muteMetadata: true })
+```
+
+#### Via method
+ 
+- `LogLayer#muteContext(): LogLayer`
+- `LogLayer#muteMetadata(): LogLayer`
+- `LogLayer#unmuteContext(): LogLayer`
+- `LogLayer#unmuteMetadata(): LogLayer`
 
 ### Logging errors
 

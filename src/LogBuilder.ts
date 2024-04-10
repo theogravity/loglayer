@@ -1,6 +1,5 @@
-import { LogLayer } from './LogLayer'
-import type { ILogBuilder, LoggerLibrary, MessageDataType } from './types'
-import { ErrorDataType, LogLevel } from './types'
+import type { LogLayer } from "./LogLayer";
+import { type ErrorDataType, type ILogBuilder, LogLevel, type LoggerLibrary, type MessageDataType } from "./types";
 
 /**
  * A class that contains methods to specify log metadata and an error and assembles
@@ -9,16 +8,16 @@ import { ErrorDataType, LogLevel } from './types'
 export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, ErrorType extends Error = ErrorDataType>
   implements ILogBuilder
 {
-  private err: ErrorType
-  private metadata: Record<string, any>
-  private structuredLogger: LogLayer<ExternalLogger, ErrorType>
-  private hasMetadata: boolean
+  private err: ErrorType;
+  private metadata: Record<string, any>;
+  private structuredLogger: LogLayer<ExternalLogger, ErrorType>;
+  private hasMetadata: boolean;
 
   constructor(structuredLogger: LogLayer<ExternalLogger, ErrorType>) {
-    this.err = null
-    this.metadata = {}
-    this.structuredLogger = structuredLogger
-    this.hasMetadata = false
+    this.err = null;
+    this.metadata = {};
+    this.structuredLogger = structuredLogger;
+    this.hasMetadata = false;
   }
 
   /**
@@ -28,19 +27,19 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
     this.metadata = {
       ...this.metadata,
       ...metadata,
-    }
+    };
 
-    this.hasMetadata = true
+    this.hasMetadata = true;
 
-    return this
+    return this;
   }
 
   /**
    * Adds an error to the current log entry
    */
   withError(error: ErrorType) {
-    this.err = error
-    return this
+    this.err = error;
+    return this;
   }
 
   /**
@@ -50,8 +49,8 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   info(...messages: MessageDataType[]) {
-    this.structuredLogger._formatMessage(messages)
-    this.formatLog(LogLevel.info, messages)
+    this.structuredLogger._formatMessage(messages);
+    this.formatLog(LogLevel.info, messages);
   }
 
   /**
@@ -61,8 +60,8 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   warn(...messages: MessageDataType[]) {
-    this.structuredLogger._formatMessage(messages)
-    this.formatLog(LogLevel.warn, messages)
+    this.structuredLogger._formatMessage(messages);
+    this.formatLog(LogLevel.warn, messages);
   }
 
   /**
@@ -72,8 +71,8 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   error(...messages: MessageDataType[]) {
-    this.structuredLogger._formatMessage(messages)
-    this.formatLog(LogLevel.error, messages)
+    this.structuredLogger._formatMessage(messages);
+    this.formatLog(LogLevel.error, messages);
   }
 
   /**
@@ -83,8 +82,8 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   debug(...messages: MessageDataType[]) {
-    this.structuredLogger._formatMessage(messages)
-    this.formatLog(LogLevel.debug, messages)
+    this.structuredLogger._formatMessage(messages);
+    this.formatLog(LogLevel.debug, messages);
   }
 
   /**
@@ -94,39 +93,39 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
    * the first parameter would be used.
    */
   trace(...messages: MessageDataType[]) {
-    this.structuredLogger._formatMessage(messages)
-    this.formatLog(LogLevel.trace, messages)
+    this.structuredLogger._formatMessage(messages);
+    this.formatLog(LogLevel.trace, messages);
   }
 
   /**
    * All logging inputs are dropped and stops sending logs to the logging library.
    */
   disableLogging() {
-    this.structuredLogger._config.enabled = false
-    return this
+    this.structuredLogger._config.enabled = false;
+    return this;
   }
 
   /**
    * Enable sending logs to the logging library.
    */
   enableLogging() {
-    this.structuredLogger._config.enabled = true
-    return this
+    this.structuredLogger._config.enabled = true;
+    return this;
   }
 
   private formatLog(logLevel: LogLevel, params: any[]) {
-    const { error: errConfig } = this.structuredLogger._config
+    const { error: errConfig } = this.structuredLogger._config;
 
-    const hasData = this.hasMetadata || !!this.err
+    const hasData = (this.structuredLogger._config.muteMetadata ? false : this.hasMetadata) || !!this.err;
 
     const data = {
       ...this.metadata,
-    }
+    };
 
     if (this.err) {
-      data[errConfig.fieldName] = errConfig.serializer ? errConfig.serializer(this.err) : this.err
+      data[errConfig.fieldName] = errConfig.serializer ? errConfig.serializer(this.err) : this.err;
     }
 
-    this.structuredLogger._formatLog({ logLevel, params, data: hasData ? data : null })
+    this.structuredLogger._formatLog({ logLevel, params, data: hasData ? data : null });
   }
 }

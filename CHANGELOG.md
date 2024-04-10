@@ -1,3 +1,16 @@
+## 3.1.0
+
+- Added new configuration option `muteContext` and `muteMetadata` to disable context and metadata logging.
+- Added the following methods:
+  * `LogLayer#muteContext()`
+  * `LogLayer#unmuteContext()`
+  * `LogLayer#muteMetadata()`
+  * `LogLayer#unmuteMetadata()`
+
+See readme for usage details.
+
+Internal: Switch from `eslint` to [`biomejs.dev`](https://biomejs.dev/) for linting.
+
 ## 3.0.1
 
 - Created a separate Typescript type for the `onBeforeDataOut` hook parameter, `OnBeforeDataOutParams`.

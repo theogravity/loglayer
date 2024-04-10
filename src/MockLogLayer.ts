@@ -1,12 +1,10 @@
 /* eslint @typescript-eslint/no-empty-function: 0 */
 /* istanbul ignore file */
 
-import { ILogBuilder, ILogLayer, LogLevel, ErrorOnlyOpts, MessageDataType } from './types'
-import { MockLogBuilder } from './MockLogBuilder'
+import { MockLogBuilder } from "./MockLogBuilder";
+import type { ErrorOnlyOpts, ILogBuilder, ILogLayer, LogLevel, MessageDataType } from "./types";
 
 export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType> {
-  constructor(p: any) {}
-
   info(...messages: MessageDataType[]): void {}
   warn(...messages: MessageDataType[]): void {}
   error(...messages: MessageDataType[]): void {}
@@ -20,34 +18,50 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
   metadataOnly(metadata: Record<string, any>, logLevel: LogLevel): void {}
 
   withPrefix(prefix: string) {
-    return new MockLogLayer({})
+    return new MockLogLayer();
   }
 
   withContext(context: Record<string, any>): ILogLayer<any, ErrorType> {
-    return this
+    return this;
   }
 
   withError(error: ErrorType): ILogBuilder {
-    return new MockLogBuilder()
+    return new MockLogBuilder();
   }
 
   withMetadata(metadata: Record<string, any>): ILogBuilder {
-    return new MockLogBuilder()
+    return new MockLogBuilder();
   }
 
   getContext(): Record<string, any> {
-    return {}
+    return {};
   }
 
   enableLogging() {
-    return this
+    return this;
   }
 
   disableLogging() {
-    return this
+    return this;
   }
 
   child() {
-    return new MockLogLayer({})
+    return new MockLogLayer();
+  }
+
+  muteContext() {
+    return this;
+  }
+
+  unMuteContext() {
+    return this;
+  }
+
+  muteMetadata() {
+    return this;
+  }
+
+  unMuteMetadata() {
+    return this;
   }
 }

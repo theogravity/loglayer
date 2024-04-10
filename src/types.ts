@@ -2,15 +2,15 @@
  * Logging methods that are common to logging libraries
  */
 export interface LoggerLibrary {
-  info(...data: any[]): void
-  warn(...data: any[]): void
-  error(...data: any[]): void
-  trace?: (...data: any[]) => void
-  debug(...data: any[]): void
+  info(...data: any[]): void;
+  warn(...data: any[]): void;
+  error(...data: any[]): void;
+  trace?: (...data: any[]) => void;
+  debug(...data: any[]): void;
 }
 
-export type MessageDataType = string | number | null | undefined
-export type ErrorDataType = any
+export type MessageDataType = string | number | null | undefined;
+export type ErrorDataType = any;
 
 export interface ILogBuilder {
   /**
@@ -19,35 +19,35 @@ export interface ILogBuilder {
    * The logging library may or may not support multiple message parameters and only
    * the first parameter would be used.
    */
-  info(...messages: MessageDataType[]): void
+  info(...messages: MessageDataType[]): void;
   /**
    * Sends a log message to the logging library under the warn log level
    *
    * The logging library may or may not support multiple message parameters and only
    * the first parameter would be used.
    */
-  warn(...messages: MessageDataType[]): void
+  warn(...messages: MessageDataType[]): void;
   /**
    * Sends a log message to the logging library under the error log level
    *
    * The logging library may or may not support multiple message parameters and only
    * the first parameter would be used.
    */
-  error(...messages: MessageDataType[]): void
+  error(...messages: MessageDataType[]): void;
   /**
    * Sends a log message to the logging library under the debug log level
    *
    * The logging library may or may not support multiple message parameters and only
    * the first parameter would be used.
    */
-  debug(...messages: MessageDataType[]): void
+  debug(...messages: MessageDataType[]): void;
   /**
    * Sends a log message to the logging library under the trace log level
    *
    * The logging library may or may not support multiple message parameters and only
    * the first parameter would be used.
    */
-  trace(...messages: MessageDataType[]): void
+  trace(...messages: MessageDataType[]): void;
 }
 
 export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, ErrorType = ErrorDataType>
@@ -55,38 +55,38 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
   /**
    * Calls child() and sets the prefix to be included with every log message.
    */
-  withPrefix(string: string): ILogBuilder
+  withPrefix(string: string): ILogBuilder;
   /**
    * Appends context data which will be included with
    * every log entry.
    */
-  withContext(context: Record<string, any>): ILogLayer<ExternalLogger, ErrorType>
+  withContext(context: Record<string, any>): ILogLayer<ExternalLogger, ErrorType>;
   /**
    * Specifies metadata to include with the log message
    */
-  withMetadata(metadata: Record<string, any>): ILogBuilder
+  withMetadata(metadata: Record<string, any>): ILogBuilder;
   /**
    * Specifies an Error to include with the log message
    */
-  withError(error: ErrorType): ILogBuilder
+  withError(error: ErrorType): ILogBuilder;
   /**
    * Logs only the error object without a log message
    */
-  errorOnly(error: ErrorType, opts?: ErrorOnlyOpts): void
+  errorOnly(error: ErrorType, opts?: ErrorOnlyOpts): void;
   /**
    * Logs only metadata without a log message
    */
-  metadataOnly(metadata: Record<string, any>, logLevel: LogLevel): void
+  metadataOnly(metadata: Record<string, any>, logLevel: LogLevel): void;
 
   /**
    * Returns the underlying log instance
    */
-  getLoggerInstance(): ExternalLogger
+  getLoggerInstance(): ExternalLogger;
 
   /**
    * Returns the context used for the logger
    */
-  getContext(): Record<string, any>
+  getContext(): Record<string, any>;
 
   /**
    * Creates a new instance of LogLayer but with the initialization
@@ -94,37 +94,54 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
    *
    * The copied context data is a *shallow copy*.
    */
-  child(): ILogBuilder
+  child(): ILogBuilder;
+
+  /**
+   * Disables inclusion of context data in the print
+   */
+  muteContext(): ILogLayer<ExternalLogger, ErrorType>;
+  /**
+   * Enables inclusion of context data in the print
+   */
+  unMuteContext(): ILogLayer<ExternalLogger, ErrorType>;
+  /**
+   * Disables inclusion of metadata data in the print
+   */
+  muteMetadata(): ILogLayer<ExternalLogger, ErrorType>;
+  /**
+   * Enables inclusion of metadata data in the print
+   */
+  unMuteMetadata(): ILogLayer<ExternalLogger, ErrorType>;
 }
 
 export enum LogLevel {
-  info = 'info',
-  warn = 'warn',
-  error = 'error',
-  debug = 'debug',
-  trace = 'trace',
+  info = "info",
+  warn = "warn",
+  error = "error",
+  debug = "debug",
+  trace = "trace",
 }
 
 /**
  * Specifies the type of logging library used.
  */
 export enum LoggerType {
-  OTHER = 'other',
-  WINSTON = 'winston',
-  ELECTRON_LOG = 'electronLog',
-  ROARR = 'roarr',
-  PINO = 'pino',
-  BUNYAN = 'bunyan',
-  CONSOLE = 'console',
+  OTHER = "other",
+  WINSTON = "winston",
+  ELECTRON_LOG = "electronLog",
+  ROARR = "roarr",
+  PINO = "pino",
+  BUNYAN = "bunyan",
+  CONSOLE = "console",
 }
 
-export type ErrorSerializerType<ErrorType> = (err: ErrorType) => Record<string, any> | string
+export type ErrorSerializerType<ErrorType> = (err: ErrorType) => Record<string, any> | string;
 
 export interface ErrorOnlyOpts {
   /**
    * Sets the log level of the error
    */
-  logLevel?: LogLevel
+  logLevel?: LogLevel;
   /**
    * If `true`, copies the `error.message` if available to the logger library's
    * message property.
@@ -132,7 +149,7 @@ export interface ErrorOnlyOpts {
    * If the config option `error.copyMsgOnOnlyError` is enabled, this property
    * can be set to `true` to disable the behavior for this specific log entry.
    */
-  copyMsg?: boolean
+  copyMsg?: boolean;
 }
 
 export interface LogLayerErrorConfig<ErrorType> {
@@ -140,14 +157,14 @@ export interface LogLayerErrorConfig<ErrorType> {
    * A function that takes in an incoming Error type and transforms it into an object.
    * Used in the event that the logging library does not natively support serialization of errors.
    */
-  serializer?: ErrorSerializerType<ErrorType>
+  serializer?: ErrorSerializerType<ErrorType>;
   /**
    * Logging libraries may require a specific field name for errors so it knows
    * how to parse them.
    *
    * Default is 'err'.
    */
-  fieldName?: string
+  fieldName?: string;
   /**
    * If true, always copy error.message if available as a log message along
    * with providing the error data to the logging library.
@@ -157,7 +174,7 @@ export interface LogLayerErrorConfig<ErrorType> {
    *
    * Default is false.
    */
-  copyMsgOnOnlyError?: boolean
+  copyMsgOnOnlyError?: boolean;
 }
 
 export interface LogLayerContextConfig {
@@ -167,7 +184,7 @@ export interface LogLayerContextConfig {
    *
    * Default is context data will be flattened.
    */
-  fieldName?: string
+  fieldName?: string;
 }
 
 export interface LogLayerMetadataConfig {
@@ -177,44 +194,44 @@ export interface LogLayerMetadataConfig {
    *
    * Default is metadata will be flattened.
    */
-  fieldName?: string
+  fieldName?: string;
 }
 
 export interface HookBeforeDataOutParams<Data extends Record<string, any> = Record<string, any>> {
   /**
    * Log level of the data
    */
-  logLevel: LogLevel
+  logLevel: LogLevel;
   /**
    * The object containing metadata / context / error data. This
    * is `undefined` if there is no object with data.
    */
-  data?: Data
+  data?: Data;
 }
 
 export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string, any>> = (
   params: HookBeforeDataOutParams<Data>,
-) => Record<string, any> | null | undefined
+) => Record<string, any> | null | undefined;
 
 export interface HookShouldSendToLoggerParams<Data extends Record<string, any> = Record<string, any>> {
   /**
    * Message data that is copied from the original.
    */
-  messages: MessageDataType[]
+  messages: MessageDataType[];
   /**
    * Log level of the message
    */
-  logLevel: LogLevel
+  logLevel: LogLevel;
   /**
    * The object containing metadata / context / error data. This
    * is `undefined` if there is no object with data.
    */
-  data?: Data
+  data?: Data;
 }
 
 export type HookShouldSendToLoggerFn<Data extends Record<string, any> = Record<string, any>> = (
   params: HookShouldSendToLoggerParams<Data>,
-) => boolean
+) => boolean;
 
 export interface LogLayerHooksConfig {
   /**
@@ -233,7 +250,7 @@ export interface LogLayerHooksConfig {
    * @returns [Object] The object to be sent to the destination logging
    * library or null / undefined to not pass an object through.
    */
-  onBeforeDataOut?: HookBeforeDataOutFn
+  onBeforeDataOut?: HookBeforeDataOutFn;
   /**
    * Called before the data is sent to the logger. Return false to omit sending
    * to the logger. Useful for isolating specific log messages for debugging / troubleshooting.
@@ -245,14 +262,14 @@ export interface LogLayerHooksConfig {
    *
    * @returns [boolean] If true, sends data to the logger, if false does not.
    */
-  shouldSendToLogger?: HookShouldSendToLoggerFn
+  shouldSendToLogger?: HookShouldSendToLoggerFn;
 }
 
 export interface LogLayerConfig<ErrorType = ErrorDataType> {
   /**
    * The prefix to prepend to all log messages
    */
-  prefix?: string
+  prefix?: string;
   /**
    * Set to false to drop all log input and stop sending to the logging
    * library.
@@ -261,7 +278,7 @@ export interface LogLayerConfig<ErrorType = ErrorDataType> {
    *
    * Default is `true`.
    */
-  enabled?: boolean
+  enabled?: boolean;
   /**
    * If set to true, will also output messages via console logging before
    * sending to the logging library.
@@ -270,19 +287,27 @@ export interface LogLayerConfig<ErrorType = ErrorDataType> {
    * to ensure logs are still being created when the underlying
    * does not print anything.
    */
-  consoleDebug?: boolean
+  consoleDebug?: boolean;
   logger: {
     /**
      * The instance of the logging library to send log data and messages to
      */
-    instance: LoggerLibrary
+    instance: LoggerLibrary;
     /**
      * The instance type of the logging library being used
      */
-    type: LoggerType
-  }
-  error?: LogLayerErrorConfig<ErrorType>
-  metadata?: LogLayerMetadataConfig
-  context?: LogLayerContextConfig
-  hooks?: LogLayerHooksConfig
+    type: LoggerType;
+  };
+  error?: LogLayerErrorConfig<ErrorType>;
+  metadata?: LogLayerMetadataConfig;
+  context?: LogLayerContextConfig;
+  hooks?: LogLayerHooksConfig;
+  /**
+   * If set to true, will not include context data in the log message.
+   */
+  muteContext?: boolean;
+  /**
+   * If set to true, will not include metadata data in the log message.
+   */
+  muteMetadata?: boolean;
 }
