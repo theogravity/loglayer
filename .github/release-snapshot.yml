@@ -1,0 +1,33 @@
+name: Snapshot Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    name: Snapshot Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: npm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: npm run build
+
+      - name: Run type checking
+        run: npm run typecheck
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Create Snapshot Release
+        run: |
+          npm run version-packages --snapshot "${{ github.ref_name }}"
+          echo '---'
+          echo 'Detected Changes:'
+          git diff
+          echo '---'
+          npm run release --tag "${{ github.ref_name }}" --no-git-tag

@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Install Dependencies
+        run: npm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: npm run build
+
+      - name: Branch Information
+        run: |
+          echo "Git Branch: $(git branch)"
+          echo "Git Log: $(git log --oneline)"
+          echo "HEAD SHA: $(git rev-parse HEAD)"
+          echo "HEAD^1 SHA: $(git rev-parse HEAD^1)"
+          echo "Git Diff: $(git diff HEAD^1)"
+
+      - name: Run Package(s) Tests
+        run: |
+          npm run test

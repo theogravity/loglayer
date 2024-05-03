@@ -1,0 +1,24 @@
+name: Lint
+
+on:
+  pull_request:
+
+jobs:
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: npm install --frozen-lockfile --prefer-offline
+
+      - name: Build workspace packages
+        run: npm run build
+
+      - name: Run type checking
+        run: npm run typecheck
+
+      - name: Run linting
+        run: npm run lint
