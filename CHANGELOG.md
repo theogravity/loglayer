@@ -1,13 +1,72 @@
 # loglayer
 
+## 4.0.0
+
+### Major Changes
+
+- [#13](https://github.com/theogravity/loglayer/pull/13) [`d1a8cc2`](https://github.com/theogravity/loglayer/commit/d1a8cc21e4191547e839d334c9386e25f0410235) Thanks [@theogravity](https://github.com/theogravity)! - - Removes hooks and adds a plugin system where you can
+  define multiple hooks to run instead.
+
+  - Adds esm and cjs builds to the package
+
+  **Breaking Changes**
+
+  - The `hooks` option has been removed
+  - The `setHooks()` method has been removed
+  - A `plugins` option has been added
+  - An `addPlugins()` method has been added
+
+  _There will be a way to remove / disable specific plugins in a future release._
+
+  **Migrating from 3.x to 4.x**
+
+  Your 3.x definition may look like this:
+
+  ```
+  {
+    hooks: {
+      onBeforeDataOut: (data) => {
+        // do something with data
+        return data;
+      },
+      shouldSendToLogger: () => {
+        return true;
+      }
+    }
+  }
+  ```
+
+  The 4.x version of this would look like this:
+
+  ```typescript
+  {
+    plugins: [
+      {
+        onBeforeDataOut: (data) => {
+          // do something with data
+          return data;
+        },
+        shouldSendToLogger: () => {
+          return true;
+        },
+      },
+    ];
+  }
+  ```
+
+  Summary:
+
+  - Replace `hooks` with `plugins`
+  - For your existing hooks, move them into the `plugins` array where each entry is an object with the hook definition
+
 ## 3.1.0
 
 - Added new configuration option `muteContext` and `muteMetadata` to disable context and metadata logging.
 - Added the following methods:
-  * `LogLayer#muteContext()`
-  * `LogLayer#unmuteContext()`
-  * `LogLayer#muteMetadata()`
-  * `LogLayer#unmuteMetadata()`
+  - `LogLayer#muteContext()`
+  - `LogLayer#unmuteContext()`
+  - `LogLayer#muteMetadata()`
+  - `LogLayer#unmuteMetadata()`
 
 See readme for usage details.
 
@@ -22,8 +81,8 @@ Internal: Switch from `eslint` to [`biomejs.dev`](https://biomejs.dev/) for lint
 **Breaking change**
 
 - The hook `onBeforeDataOut` signature has changed
-  * from: `onBeforeDataOut(data)`
-  * to: `onBeforeDataOut({ data, logLevel })`
+  - from: `onBeforeDataOut(data)`
+  - to: `onBeforeDataOut({ data, logLevel })`
 
 ## 2.0.3
 
@@ -42,13 +101,13 @@ Internal: Switch from `eslint` to [`biomejs.dev`](https://biomejs.dev/) for lint
 **Contributor:** Theo Gravity
 
 - Fixed issue where `shouldSendToLogger` may not send logs out because `messages` may have been manipulated. `messages`
-is now a copy of the original.
+  is now a copy of the original.
 
 ## 2.0.0 - Mon Mar 20 2023 12:25:30
 
 **Contributor:** Theo Gravity
 
-*Breaking change*
+_Breaking change_
 
 The `shouldSendToLogger` hook parameter is now an object, and adds in `logLevel` as a property.
 
@@ -67,7 +126,7 @@ This hook allows you to conditionally send a log entry or not to the logger.
 **Contributor:** Theo Gravity
 
 - Added log message prefixing
-  * Can be set via `prefix` config option, or `LogLayer#withPrefix()`. See README.md for usage info.
+  - Can be set via `prefix` config option, or `LogLayer#withPrefix()`. See README.md for usage info.
 - Fix issue where `LogLayer#child()` was setting empty context data when context has not been set at all
 
 ## 1.4.2 - Wed Nov 02 2022 05:23:14
@@ -156,4 +215,3 @@ Adds a new method to the logger, `getContext()`, which returns the current conte
 - Make withContext() chainable (#1)
 
 - `withContext()` is now chainable. Most will want to call it right after creating a new `LogLayer` instead of having a separate line for it.
-
