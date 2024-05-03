@@ -1,10 +1,13 @@
+import { describe, expect, it } from "vitest";
 import { LogLayer } from "../LogLayer";
 import {
-  type HookBeforeDataOutFn,
-  type HookShouldSendToLoggerFn,
   type LogLayerConfig,
+  LogLayerPlugin,
   LogLevel,
   LoggerType,
+  type PluginBeforeDataOutFn,
+  PluginBeforeDataOutParams,
+  type PluginShouldSendToLoggerFn,
 } from "../types";
 
 class GenericLoggingLib {
@@ -352,55 +355,10 @@ describe("loglayer general tests", () => {
   });
 
   describe("config options", () => {
-    describe("hooks config", () => {
-      it("should update hooks", () => {
-        const onBeforeDataOut: HookBeforeDataOutFn = ({ data }) => {
-          if (data) {
-            data.modified = true;
-          }
-
-          return data;
-        };
-
-        const log = getLogger();
-
-        log.setHooks({
-          onBeforeDataOut,
-        });
-
-        const genericLogger = log.getLoggerInstance();
-        const e = new Error("err");
-
-        log.withContext({
-          contextual: "data",
-        });
-
-        log
-          .withError(e)
-          .withMetadata({
-            situational: 1234,
-          })
-          .info("combined data");
-
-        expect(genericLogger.getLine()).toStrictEqual(
-          expect.objectContaining({
-            level: LogLevel.info,
-            data: [
-              {
-                err: e,
-                contextual: "data",
-                situational: 1234,
-                modified: true,
-              },
-              "combined data",
-            ],
-          }),
-        );
-      });
-
+    describe("plugins config", () => {
       describe("onBeforeDataOut", () => {
         it("should call onBeforeDataOut with context", () => {
-          const onBeforeDataOut: HookBeforeDataOutFn = ({ data }) => {
+          const onBeforeDataOut: PluginBeforeDataOutFn = ({ data }) => {
             if (data) {
               data.modified = true;
             }
@@ -409,9 +367,11 @@ describe("loglayer general tests", () => {
           };
 
           const log = getLogger({
-            hooks: {
-              onBeforeDataOut,
-            },
+            plugins: [
+              {
+                onBeforeDataOut,
+              },
+            ],
           });
           const genericLogger = log.getLoggerInstance();
           const e = new Error("err");
@@ -444,7 +404,7 @@ describe("loglayer general tests", () => {
         });
 
         it("should call onBeforeDataOut with without data", () => {
-          const onBeforeDataOut: HookBeforeDataOutFn = ({ data }) => {
+          const onBeforeDataOut: PluginBeforeDataOutFn = ({ data }) => {
             if (data) {
               data.modified = true;
             }
@@ -453,10 +413,13 @@ describe("loglayer general tests", () => {
           };
 
           const log = getLogger({
-            hooks: {
-              onBeforeDataOut,
-            },
+            plugins: [
+              {
+                onBeforeDataOut,
+              },
+            ],
           });
+
           const genericLogger = log.getLoggerInstance();
 
           log.info("no data");
@@ -472,18 +435,16 @@ describe("loglayer general tests", () => {
 
       describe("shouldSendToLogger", () => {
         it("should not send to the logger", () => {
-          const shouldSendToLogger: HookShouldSendToLoggerFn = ({ messages }) => {
-            if (messages[0] === 0) {
-              return false;
-            }
-
-            return true;
+          const shouldSendToLogger: PluginShouldSendToLoggerFn = ({ messages }) => {
+            return messages[0] !== 0;
           };
 
           const log = getLogger({
-            hooks: {
-              shouldSendToLogger,
-            },
+            plugins: [
+              {
+                shouldSendToLogger,
+              },
+            ],
           });
           const genericLogger = log.getLoggerInstance();
 
@@ -498,210 +459,136 @@ describe("loglayer general tests", () => {
           );
         });
       });
-    });
 
-    describe("error config", () => {
-      it("should use a custom serializer and field name", () => {
-        const log = getLogger({
-          error: {
-            serializer: (err) => {
-              return `[ERROR] ${err.message}`;
+      it("should add plugins", () => {
+        const log = getLogger();
+
+        log.addPlugins([
+          {
+            onBeforeDataOut: ({ data }) => {
+              if (data) {
+                data.newField = true;
+              }
+
+              return data;
             },
-            fieldName: "causedBy",
           },
-        });
+          {
+            onBeforeDataOut: ({ data }) => {
+              if (data) {
+                data.modified = true;
+              }
+
+              return data;
+            },
+          },
+        ]);
 
         const genericLogger = log.getLoggerInstance();
+        const e = new Error("err");
 
-        log.errorOnly(new Error("this is an error"));
+        log.withContext({
+          contextual: "data",
+        });
+
+        log
+          .withError(e)
+          .withMetadata({
+            situational: 1234,
+          })
+          .info("combined data");
 
         expect(genericLogger.getLine()).toStrictEqual(
           expect.objectContaining({
-            level: LogLevel.error,
-            data: [
-              {
-                causedBy: "[ERROR] this is an error",
-              },
-            ],
-          }),
-        );
-      });
-
-      it("should always copy error messages", () => {
-        const log = getLogger({
-          error: {
-            copyMsgOnOnlyError: true,
-          },
-        });
-
-        const genericLogger = log.getLoggerInstance();
-
-        const e = new Error("this is an error");
-
-        log.errorOnly(e);
-
-        expect(genericLogger.getLine()).toStrictEqual(
-          expect.objectContaining({
-            level: LogLevel.error,
+            level: LogLevel.info,
             data: [
               {
                 err: e,
+                contextual: "data",
+                situational: 1234,
+                modified: true,
+                newField: true,
               },
-              "this is an error",
+              "combined data",
             ],
           }),
         );
       });
+    });
+  });
 
-      it("should override copy over messages", () => {
-        const log = getLogger({
-          error: {
-            copyMsgOnOnlyError: true,
+  describe("error config", () => {
+    it("should use a custom serializer and field name", () => {
+      const log = getLogger({
+        error: {
+          serializer: (err) => {
+            return `[ERROR] ${err.message}`;
           },
-        });
-
-        const genericLogger = log.getLoggerInstance();
-
-        const e = new Error("this is an error");
-
-        log.errorOnly(e, { copyMsg: false });
-
-        expect(genericLogger.getLine()).toStrictEqual(
-          expect.objectContaining({
-            level: LogLevel.error,
-            data: [
-              {
-                err: e,
-              },
-            ],
-          }),
-        );
-      });
-    });
-
-    it("should use a custom metadata field", () => {
-      const log = getLogger({
-        metadata: {
-          fieldName: "myMetadata",
+          fieldName: "causedBy",
         },
       });
 
       const genericLogger = log.getLoggerInstance();
 
-      log.metadataOnly({
-        my: "metadata",
-      });
+      log.errorOnly(new Error("this is an error"));
 
       expect(genericLogger.getLine()).toStrictEqual(
         expect.objectContaining({
-          level: LogLevel.info,
+          level: LogLevel.error,
           data: [
             {
-              myMetadata: {
-                my: "metadata",
-              },
+              causedBy: "[ERROR] this is an error",
             },
           ],
         }),
       );
     });
 
-    it("should use a custom context and metadata field", () => {
+    it("should always copy error messages", () => {
       const log = getLogger({
-        context: {
-          fieldName: "myContext",
-        },
-        metadata: {
-          fieldName: "myMetadata",
+        error: {
+          copyMsgOnOnlyError: true,
         },
       });
 
       const genericLogger = log.getLoggerInstance();
 
-      log.withContext({
-        reqId: 1234,
-      });
+      const e = new Error("this is an error");
 
-      log
-        .withMetadata({
-          my: "metadata",
-        })
-        .info("a request");
-
-      expect(log.getContext()).toStrictEqual({
-        reqId: 1234,
-      });
+      log.errorOnly(e);
 
       expect(genericLogger.getLine()).toStrictEqual(
         expect.objectContaining({
-          level: LogLevel.info,
+          level: LogLevel.error,
           data: [
             {
-              myContext: {
-                reqId: 1234,
-              },
-              myMetadata: {
-                my: "metadata",
-              },
+              err: e,
             },
-            "a request",
+            "this is an error",
           ],
         }),
       );
     });
 
-    it("should use a custom metadata field", () => {
+    it("should override copy over messages", () => {
       const log = getLogger({
-        metadata: {
-          fieldName: "myMetadata",
+        error: {
+          copyMsgOnOnlyError: true,
         },
       });
 
       const genericLogger = log.getLoggerInstance();
 
-      log.metadataOnly({
-        my: "metadata",
-      });
+      const e = new Error("this is an error");
+
+      log.errorOnly(e, { copyMsg: false });
 
       expect(genericLogger.getLine()).toStrictEqual(
         expect.objectContaining({
-          level: LogLevel.info,
+          level: LogLevel.error,
           data: [
             {
-              myMetadata: {
-                my: "metadata",
-              },
-            },
-          ],
-        }),
-      );
-    });
-
-    it("should merge metadata and context fields if they are the same field name", () => {
-      const log = getLogger({
-        metadata: {
-          fieldName: "sharedData",
-        },
-        context: {
-          fieldName: "sharedData",
-        },
-      });
-
-      const genericLogger = log.getLoggerInstance();
-
-      log.withContext({ ctx: "data" }).metadataOnly({
-        my: "metadata",
-      });
-
-      expect(genericLogger.getLine()).toStrictEqual(
-        expect.objectContaining({
-          level: LogLevel.info,
-          data: [
-            {
-              sharedData: {
-                my: "metadata",
-                ctx: "data",
-              },
+              err: e,
             },
           ],
         }),
@@ -709,91 +596,220 @@ describe("loglayer general tests", () => {
     });
   });
 
-  describe("mute / unmute", () => {
-    it("should mute and unmute context", () => {
-      const log = getLogger();
-      const genericLogger = log.getLoggerInstance();
-      const context = { ctx: "data" };
-
-      log.muteContext();
-      log.withContext(context).info("test");
-
-      expect(genericLogger.getLine()).toStrictEqual(
-        expect.objectContaining({
-          level: LogLevel.info,
-          data: ["test"],
-        }),
-      );
-
-      log.unMuteContext().info("test");
-
-      expect(genericLogger.getLine()).toStrictEqual(
-        expect.objectContaining({
-          level: LogLevel.info,
-          data: [context, "test"],
-        }),
-      );
+  it("should use a custom metadata field", () => {
+    const log = getLogger({
+      metadata: {
+        fieldName: "myMetadata",
+      },
     });
 
-    it("should mute context but still add metadata", () => {
-      const log = getLogger();
-      const genericLogger = log.getLoggerInstance();
-      const metadata = { test: "abcd" };
+    const genericLogger = log.getLoggerInstance();
 
-      log.muteContext();
-      log.withContext({ ctx: "data" }).withMetadata(metadata).info("test");
-
-      expect(genericLogger.getLine()).toStrictEqual(
-        expect.objectContaining({
-          level: LogLevel.info,
-          data: [metadata, "test"],
-        }),
-      );
+    log.metadataOnly({
+      my: "metadata",
     });
 
-    it("should mute and unmute metadata", () => {
-      const log = getLogger();
-      const genericLogger = log.getLoggerInstance();
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [
+          {
+            myMetadata: {
+              my: "metadata",
+            },
+          },
+        ],
+      }),
+    );
+  });
 
-      const metadata = { test: "abcd" };
-      log.muteMetadata();
-      log.withMetadata(metadata).info("test");
-
-      expect(genericLogger.getLine()).toStrictEqual(
-        expect.objectContaining({
-          level: LogLevel.info,
-          data: ["test"],
-        }),
-      );
-
-      log.unMuteMetadata();
-      log.withMetadata(metadata).info("test");
-
-      expect(genericLogger.getLine()).toStrictEqual(
-        expect.objectContaining({
-          level: LogLevel.info,
-          data: [metadata, "test"],
-        }),
-      );
+  it("should use a custom context and metadata field", () => {
+    const log = getLogger({
+      context: {
+        fieldName: "myContext",
+      },
+      metadata: {
+        fieldName: "myMetadata",
+      },
     });
 
-    it("should mute both context and metadata", () => {
-      const log = getLogger();
-      const genericLogger = log.getLoggerInstance();
-      const metadata = { test: "abcd" };
-      const context = { ctx: "data" };
+    const genericLogger = log.getLoggerInstance();
 
-      log.muteMetadata();
-      log.muteContext();
-
-      log.withContext(context).withMetadata(metadata).info("test");
-
-      expect(genericLogger.getLine()).toStrictEqual(
-        expect.objectContaining({
-          level: LogLevel.info,
-          data: ["test"],
-        }),
-      );
+    log.withContext({
+      reqId: 1234,
     });
+
+    log
+      .withMetadata({
+        my: "metadata",
+      })
+      .info("a request");
+
+    expect(log.getContext()).toStrictEqual({
+      reqId: 1234,
+    });
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [
+          {
+            myContext: {
+              reqId: 1234,
+            },
+            myMetadata: {
+              my: "metadata",
+            },
+          },
+          "a request",
+        ],
+      }),
+    );
+  });
+
+  it("should use a custom metadata field", () => {
+    const log = getLogger({
+      metadata: {
+        fieldName: "myMetadata",
+      },
+    });
+
+    const genericLogger = log.getLoggerInstance();
+
+    log.metadataOnly({
+      my: "metadata",
+    });
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [
+          {
+            myMetadata: {
+              my: "metadata",
+            },
+          },
+        ],
+      }),
+    );
+  });
+
+  it("should merge metadata and context fields if they are the same field name", () => {
+    const log = getLogger({
+      metadata: {
+        fieldName: "sharedData",
+      },
+      context: {
+        fieldName: "sharedData",
+      },
+    });
+
+    const genericLogger = log.getLoggerInstance();
+
+    log.withContext({ ctx: "data" }).metadataOnly({
+      my: "metadata",
+    });
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [
+          {
+            sharedData: {
+              my: "metadata",
+              ctx: "data",
+            },
+          },
+        ],
+      }),
+    );
+  });
+});
+
+describe("mute / unmute", () => {
+  it("should mute and unmute context", () => {
+    const log = getLogger();
+    const genericLogger = log.getLoggerInstance();
+    const context = { ctx: "data" };
+
+    log.muteContext();
+    log.withContext(context).info("test");
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: ["test"],
+      }),
+    );
+
+    log.unMuteContext().info("test");
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [context, "test"],
+      }),
+    );
+  });
+
+  it("should mute context but still add metadata", () => {
+    const log = getLogger();
+    const genericLogger = log.getLoggerInstance();
+    const metadata = { test: "abcd" };
+
+    log.muteContext();
+    log.withContext({ ctx: "data" }).withMetadata(metadata).info("test");
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [metadata, "test"],
+      }),
+    );
+  });
+
+  it("should mute and unmute metadata", () => {
+    const log = getLogger();
+    const genericLogger = log.getLoggerInstance();
+
+    const metadata = { test: "abcd" };
+    log.muteMetadata();
+    log.withMetadata(metadata).info("test");
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: ["test"],
+      }),
+    );
+
+    log.unMuteMetadata();
+    log.withMetadata(metadata).info("test");
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: [metadata, "test"],
+      }),
+    );
+  });
+
+  it("should mute both context and metadata", () => {
+    const log = getLogger();
+    const genericLogger = log.getLoggerInstance();
+    const metadata = { test: "abcd" };
+    const context = { ctx: "data" };
+
+    log.muteMetadata();
+    log.muteContext();
+
+    log.withContext(context).withMetadata(metadata).info("test");
+
+    expect(genericLogger.getLine()).toStrictEqual(
+      expect.objectContaining({
+        level: LogLevel.info,
+        data: ["test"],
+      }),
+    );
   });
 });

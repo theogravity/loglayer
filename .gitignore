@@ -66,3 +66,4 @@ lib/
 
 build/
 coverage/
+dist/

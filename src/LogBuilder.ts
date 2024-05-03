@@ -1,5 +1,6 @@
 import type { LogLayer } from "./LogLayer";
-import { type ErrorDataType, type ILogBuilder, LogLevel, type LoggerLibrary, type MessageDataType } from "./types";
+import type { ErrorDataType, ILogBuilder, LoggerLibrary, MessageDataType } from "./types";
+import { LogLevel } from "./types";
 
 /**
  * A class that contains methods to specify log metadata and an error and assembles
@@ -8,7 +9,7 @@ import { type ErrorDataType, type ILogBuilder, LogLevel, type LoggerLibrary, typ
 export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, ErrorType extends Error = ErrorDataType>
   implements ILogBuilder
 {
-  private err: ErrorType;
+  private err: ErrorType | null;
   private metadata: Record<string, any>;
   private structuredLogger: LogLayer<ExternalLogger, ErrorType>;
   private hasMetadata: boolean;
@@ -122,7 +123,7 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
       ...this.metadata,
     };
 
-    if (this.err) {
+    if (this.err && errConfig.fieldName) {
       data[errConfig.fieldName] = errConfig.serializer ? errConfig.serializer(this.err) : this.err;
     }
 

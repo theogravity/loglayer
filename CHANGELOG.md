@@ -1,3 +1,5 @@
+# loglayer
+
 ## 3.1.0
 
 - Added new configuration option `muteContext` and `muteMetadata` to disable context and metadata logging.

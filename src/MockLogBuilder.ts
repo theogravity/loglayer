@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 
 import type { ILogBuilder } from "./types";
-import type { MessageDataType } from "./types";
+
+import type { MessageDataType } from "./types/common.types";
 
 export class MockLogBuilder implements ILogBuilder {
   debug(...messages: MessageDataType[]): void {}

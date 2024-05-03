@@ -67,8 +67,8 @@ logLayer
       - [Serializing errors](#serializing-errors)
       - [Data output options](#data-output-options)
   - [Child logger](#child-logger)
-  - [Hooks](#hooks)
-    - [Set / update hooks outside of configuration](#set--update-hooks-outside-of-configuration)
+  - [Plugins](#plugins)
+    - [Add plugins outside of configuration](#add-plugins-outside-of-configuration)
     - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
     - [Conditionally send or not send an entry to the logging library](#conditionally-send-or-not-send-an-entry-to-the-logging-library)
   - [Disable / enable logging](#disable--enable-logging)
@@ -373,37 +373,10 @@ interface LogLayerConfig {
      */
     fieldName?: string
   }
-  hooks?: {
-    /**
-     * Called after the assembly of the data object that contains
-     * the metadata / context / error data before being sent to the destination logging
-     * library.
-     *
-     * - The shape of `data` varies depending on your `fieldName` configuration
-     * for metadata / context / error. The metadata / context / error data is a *shallow* clone.
-     * - If data was not found for assembly, `undefined` is used as the `data` input.
-     * - You can also create your own object and return it to be sent to the logging library.
-     *
-     * @param Object [params.data] The object containing metadata / context / error data. This is `undefined` if there is no object with data.
-     * @param LogLevel [params.logLevel] The log level of the data.
-     *
-     * @returns [Object] The object to be sent to the destination logging
-     * library or null / undefined to not pass an object through.
-     */
-    onBeforeDataOut?: HookAssembledDataFn
-    /**
-     * Called before the data is sent to the logger. Return false to omit sending
-     * to the logger. Useful for isolating specific log messages for debugging / troubleshooting.
-     *
-     * @param MessageDataType[] messages An array of message data that corresponds to what was entered in
-     * info(...messages), warn(...messages), error(...messages), debug(...messages), etc.
-     * @param Object [data] The data object that contains the context / metadata / error data.
-     This is `undefined` if there is no data. If `onBeforeDataOut` was defined, uses the data processed from it.
-     *
-     * @returns [boolean] If true, sends data to the logger, if false does not.
-     */
-    shouldSendToLogger?: HookShouldSendToLoggerFn
-  }
+  /**
+   * An array of plugins to be executed in the order they are defined.
+   */
+  plugins?: Array<LogLayerPlugin>
 }
 ```
 
@@ -542,27 +515,67 @@ const parentLog = new LogLayer(<config>).withContext({ some: 'data' })
 const childLog = parentLog.child()
 ```
 
-### Hooks
+### Plugins
 
-#### Set / update hooks outside of configuration
+Plugins are executed in the order they are defined.
 
-`LogLayer#setHooks(hooks: LogLayerHooksConfig)`
+```typescript
+export interface LogLayerPlugin {
+  /**
+   * If true, the plugin will skip execution
+   */
+  disabled?: boolean;
+  onBeforeDataOut?(params: PluginBeforeDataOutParams): Record<string, any> | null | undefined;
+  shouldSendToLogger?(params: PluginShouldSendToLoggerParams): boolean;
+}
+```
 
-Update hook callback definitions. This is an alternative
-to the `hooks` config option. Only hooks defined will be replaced.
+The event lifecycle is as follows:
+
+1. `onBeforeDataOut` is called to modify the data object before it is sent to the logging library.
+2. `shouldSendToLogger` is called to determine if the log entry should be sent to the logging library.
+
+#### Add plugins outside of configuration
+
+`LogLayer#addPlugins(plugins: Array<LogLayerPlugin>)`
+
+This adds new plugins to the existing configuration.
 
 #### Modify / create object data before being sent to the logging library
 
-`(data?: Record<string, any>) => Record<string, any> | null | undefined`
+```typescript
+export interface PluginBeforeDataOutParams {
+  /**
+   * Log level of the data
+   */
+  logLevel: LogLevel;
+  /**
+   * The object containing metadata / context / error data. This
+   * is `undefined` if there is no object with data.
+   */
+  data?: Record<string, any>;
+}
+```
+
+`onBeforeDataOut(params: PluginBeforeDataOutParams) => Record<string, any> | null | undefined`
 
 The callback `onBeforeDataOut` can be used to modify the data object
 that contains the context / metadata / error data or create a custom object
 before it is sent out to the logging library.
 
-```typescript
-import { LoggerType, LogLayer, HookAssembledDataFn } from 'loglayer'
+Return `null` or `undefined` to not modify the data object.
 
-const onBeforeDataOut: HookAssembledDataFn = (data) => {
+Subsequent plugins will have the `data` property updated from the results of the previous plugin if a result was returned from it.
+
+```typescript
+import { 
+  LoggerType, 
+  LogLayer, 
+  PluginBeforeDataOutFn,
+  PluginBeforeDataOutParams,
+} from 'loglayer'
+
+const onBeforeDataOut: PluginBeforeDataOutFn = (data: PluginBeforeDataOutParams) => {
   if (data) {
     data.modified = true 
   }
@@ -572,9 +585,9 @@ const onBeforeDataOut: HookAssembledDataFn = (data) => {
 
 const log = new LogLayer({
   ...
-  hooks: {
+  plugins: [{
     onBeforeDataOut,
-  }
+  }]
 })
 
 log.withContext({ test: 'data' }).info('this is a test message')
@@ -590,22 +603,45 @@ log.withContext({ test: 'data' }).info('this is a test message')
 
 #### Conditionally send or not send an entry to the logging library
 
-`(params: { messages: MessageDataType[], logLevel: LogLevel, data?: Data }) => boolean`
+```typescript
+export interface PluginShouldSendToLoggerParams {
+  /**
+   * Message data that is copied from the original.
+   */
+  messages: MessageDataType[];
+  /**
+   * Log level of the message
+   */
+  logLevel: LogLevel;
+  /**
+   * The object containing metadata / context / error data. This
+   * is `undefined` if there is no object with data.
+   */
+  data?: Record<string, any>;
+}
+```
+
+`shouldSendToLogger(params: PluginShouldSendToLoggerParams) => boolean`
 
 The callback `shouldSendToLogger` is called before the data is sent to the logger. 
 Return false to omit sending to the logger. Useful for isolating specific log 
-messages for debugging / troubleshooting.
+messages for debugging / troubleshooting. If multiple plugins are defined, all must return true for the log entry to be sent.
 
 *Parameters*
 
 - `messages`: The parameters sent via `info()`, `warn()`, `error()`, `debug()`, etc. Most will use `messages[0]`. This data is copied from the original.
 - `[data]`: The data object that contains the context / metadata / error data. This is `null` if there is no data. 
-  If `onBeforeDataOut` was defined, uses the data processed from it.
+  *  If `onBeforeDataOut` was used, this will be the result of the data processed from all plugins that defined it.
 
 ```typescript
-import { LoggerType, LogLayer, HookAssembledDataFn } from 'loglayer'
+import { 
+  LoggerType, 
+  LogLayer, 
+  PluginShouldSendToLoggerFn, 
+  PluginShouldSendToLoggerParams
+} from 'loglayer'
 
-const shouldSendToLogger: boolean = ({ messages }) => {
+const shouldSendToLogger: PluginShouldSendToLoggerFn = ({ messages }: PluginShouldSendToLoggerParams) => {
   // Define custom logic here (ex: regex) to determine if the log should be sent out or not
   
   // Read the first parameter of info() / warn() / error() / debug() / etc
@@ -618,9 +654,9 @@ const shouldSendToLogger: boolean = ({ messages }) => {
 
 const log = new LogLayer({
   ...
-  hooks: {
+  plugins: [{
     shouldSendToLogger,
-  }
+  }]
 })
 
 // Will not send the log entry to the logger

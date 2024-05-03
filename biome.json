@@ -16,7 +16,8 @@
       ".turbo",
       "build/*",
       "coverage/*",
-      ".pnpm-store/*"
+      ".pnpm-store/*",
+      "dist/*"
     ]
   },
   "linter": {

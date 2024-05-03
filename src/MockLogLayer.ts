@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 
 import { MockLogBuilder } from "./MockLogBuilder";
-import type { ErrorOnlyOpts, ILogBuilder, ILogLayer, LogLevel, MessageDataType } from "./types";
+import type { ErrorOnlyOpts, ILogBuilder, ILogLayer, LogLayerPlugin } from "./types";
+import type { LogLevel, MessageDataType } from "./types/common.types";
 
 export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType> {
   info(...messages: MessageDataType[]): void {}
@@ -16,6 +17,8 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
   errorOnly(error: ErrorType, opts?: ErrorOnlyOpts): void {}
 
   metadataOnly(metadata: Record<string, any>, logLevel: LogLevel): void {}
+
+  addPlugins(plugins: Array<LogLayerPlugin>) {}
 
   withPrefix(prefix: string) {
     return new MockLogLayer();

@@ -1,3 +1,10 @@
+import type { ErrorDataType, LogLevel, LoggerType, MessageDataType } from "./common.types";
+
+import type { LogLayerPlugin } from "./plugins.types";
+
+export * from "./plugins.types";
+export * from "./common.types";
+
 /**
  * Logging methods that are common to logging libraries
  */
@@ -8,9 +15,6 @@ export interface LoggerLibrary {
   trace?: (...data: any[]) => void;
   debug(...data: any[]): void;
 }
-
-export type MessageDataType = string | number | null | undefined;
-export type ErrorDataType = any;
 
 export interface ILogBuilder {
   /**
@@ -114,27 +118,6 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
   unMuteMetadata(): ILogLayer<ExternalLogger, ErrorType>;
 }
 
-export enum LogLevel {
-  info = "info",
-  warn = "warn",
-  error = "error",
-  debug = "debug",
-  trace = "trace",
-}
-
-/**
- * Specifies the type of logging library used.
- */
-export enum LoggerType {
-  OTHER = "other",
-  WINSTON = "winston",
-  ELECTRON_LOG = "electronLog",
-  ROARR = "roarr",
-  PINO = "pino",
-  BUNYAN = "bunyan",
-  CONSOLE = "console",
-}
-
 export type ErrorSerializerType<ErrorType> = (err: ErrorType) => Record<string, any> | string;
 
 export interface ErrorOnlyOpts {
@@ -197,74 +180,6 @@ export interface LogLayerMetadataConfig {
   fieldName?: string;
 }
 
-export interface HookBeforeDataOutParams<Data extends Record<string, any> = Record<string, any>> {
-  /**
-   * Log level of the data
-   */
-  logLevel: LogLevel;
-  /**
-   * The object containing metadata / context / error data. This
-   * is `undefined` if there is no object with data.
-   */
-  data?: Data;
-}
-
-export type HookBeforeDataOutFn<Data extends Record<string, any> = Record<string, any>> = (
-  params: HookBeforeDataOutParams<Data>,
-) => Record<string, any> | null | undefined;
-
-export interface HookShouldSendToLoggerParams<Data extends Record<string, any> = Record<string, any>> {
-  /**
-   * Message data that is copied from the original.
-   */
-  messages: MessageDataType[];
-  /**
-   * Log level of the message
-   */
-  logLevel: LogLevel;
-  /**
-   * The object containing metadata / context / error data. This
-   * is `undefined` if there is no object with data.
-   */
-  data?: Data;
-}
-
-export type HookShouldSendToLoggerFn<Data extends Record<string, any> = Record<string, any>> = (
-  params: HookShouldSendToLoggerParams<Data>,
-) => boolean;
-
-export interface LogLayerHooksConfig {
-  /**
-   * Called after the assembly of the data object that contains
-   * the metadata / context / error data before being sent to the destination logging
-   * library.
-   *
-   * - The shape of `data` varies depending on your `fieldName` configuration
-   * for metadata / context / error. The metadata / context / error data is a *shallow* clone.
-   * - If data was not found for assembly, `undefined` is used as the `data` input.
-   * - You can also create your own object and return it to be sent to the logging library.
-   *
-   * @param Object [params.data] The object containing metadata / context / error data. This is `undefined` if there is no object with data.
-   * @param LogLevel [params.logLevel] The log level of the data.
-   *
-   * @returns [Object] The object to be sent to the destination logging
-   * library or null / undefined to not pass an object through.
-   */
-  onBeforeDataOut?: HookBeforeDataOutFn;
-  /**
-   * Called before the data is sent to the logger. Return false to omit sending
-   * to the logger. Useful for isolating specific log messages for debugging / troubleshooting.
-   *
-   * @param MessageDataType[] messages An array of message data that corresponds to what was entered in
-   * info(...messages), warn(...messages), error(...messages), debug(...messages), etc.
-   * @param Object [data] The data object that contains the context / metadata / error data.
-   * This is `undefined` if there is no data. If `onBeforeDataOut` was defined, uses the data processed from it.
-   *
-   * @returns [boolean] If true, sends data to the logger, if false does not.
-   */
-  shouldSendToLogger?: HookShouldSendToLoggerFn;
-}
-
 export interface LogLayerConfig<ErrorType = ErrorDataType> {
   /**
    * The prefix to prepend to all log messages
@@ -301,7 +216,7 @@ export interface LogLayerConfig<ErrorType = ErrorDataType> {
   error?: LogLayerErrorConfig<ErrorType>;
   metadata?: LogLayerMetadataConfig;
   context?: LogLayerContextConfig;
-  hooks?: LogLayerHooksConfig;
+  plugins?: Array<LogLayerPlugin>;
   /**
    * If set to true, will not include context data in the log message.
    */
