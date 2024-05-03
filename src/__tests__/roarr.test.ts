@@ -1,5 +1,6 @@
 import type { Logger } from "roarr";
 import { serializeError } from "serialize-error";
+import { describe, expect, it } from "vitest";
 import { LogLayer } from "../LogLayer";
 import { LoggerType } from "../types";
 

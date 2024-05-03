@@ -1,5 +1,6 @@
 import { PassThrough } from "node:stream";
 import pino, { type P } from "pino";
+import { describe, expect, it } from "vitest";
 import { LogLayer } from "../LogLayer";
 import { LoggerType } from "../types";
 

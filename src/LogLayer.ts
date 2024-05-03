@@ -1,22 +1,22 @@
 import { LogBuilder } from "./LogBuilder";
-import type { ErrorOnlyOpts, LoggerLibrary } from "./types";
-import {
-  type ErrorDataType,
-  type ILogLayer,
-  type LogLayerConfig,
-  type LogLayerContextConfig,
-  type LogLayerErrorConfig,
-  type LogLayerHooksConfig,
-  type LogLayerMetadataConfig,
-  LogLevel,
-  LoggerType,
-  type MessageDataType,
+import { PluginManager } from "./plugins/PluginManager";
+import { type LogLayerPlugin, LogLevel, LoggerType } from "./types";
+import type {
+  ErrorDataType,
+  ErrorOnlyOpts,
+  ILogLayer,
+  LogLayerConfig,
+  LogLayerContextConfig,
+  LogLayerErrorConfig,
+  LogLayerMetadataConfig,
+  LoggerLibrary,
+  MessageDataType,
 } from "./types";
 
 interface FormatLogParams {
   logLevel: LogLevel;
   params?: any[];
-  data?: Record<string, any>;
+  data?: Record<string, any> | null;
 }
 
 export interface LogLayerInternalConfig<ErrorType> {
@@ -25,7 +25,6 @@ export interface LogLayerInternalConfig<ErrorType> {
   error: LogLayerErrorConfig<ErrorType>;
   metadata: LogLayerMetadataConfig;
   context: LogLayerContextConfig;
-  hooks: LogLayerHooksConfig;
   prefix?: string;
   muteContext?: boolean;
   muteMetadata?: boolean;
@@ -43,6 +42,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   private loggerType: LoggerType;
   private context: Record<string, any>;
   private hasContext: boolean;
+  private pluginManager: PluginManager;
 
   _config: LogLayerInternalConfig<ErrorType>;
 
@@ -52,7 +52,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     error,
     context,
     metadata,
-    hooks,
+    plugins,
     consoleDebug,
     prefix,
     muteMetadata,
@@ -69,11 +69,12 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       error: error || {},
       context: context || {},
       metadata: metadata || {},
-      hooks: hooks || {},
       prefix: prefix || "",
       muteContext,
       muteMetadata,
     };
+
+    this.pluginManager = new PluginManager(plugins || []);
 
     if (!this._config.error.fieldName) {
       this._config.error.fieldName = "err";
@@ -117,14 +118,10 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   /**
-   * Update hook callback definitions. This is an alternative
-   * to the `hooks` config option. Only hooks defined will be replaced.
+   * Add additional plugins.
    */
-  setHooks(hooks: LogLayerHooksConfig) {
-    this._config.hooks = {
-      ...this._config.hooks,
-      ...hooks,
-    };
+  addPlugins(plugins: Array<LogLayerPlugin>) {
+    this.pluginManager.addPlugins(plugins);
   }
 
   /**
@@ -176,7 +173,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     const formatLogConf: FormatLogParams = {
       logLevel: opts?.logLevel || LogLevel.error,
       data: {
-        [errConfig.fieldName]: errConfig.serializer ? errConfig.serializer(error) : error,
+        [errConfig.fieldName ?? "err"]: errConfig.serializer ? errConfig.serializer(error) : error,
       },
     };
 
@@ -344,7 +341,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     return {};
   }
 
-  private formatMetadata(data = null) {
+  private formatMetadata(data: Record<string, any> | null = null) {
     const { metadata: metadataCfg } = this._config;
 
     if (data && !this._config.muteMetadata) {
@@ -364,7 +361,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     return {};
   }
 
-  _formatMessage(messages = []) {
+  _formatMessage(messages: MessageDataType[] = []) {
     if (this._config.prefix && typeof messages[0] === "string") {
       messages[0] = `${this._config.prefix} ${messages[0]}`;
     }
@@ -376,7 +373,8 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     }
 
     const hasObjData = !!data || (this._config.muteContext ? false : this.hasContext);
-    let d = {};
+
+    let d: Record<string, any> | undefined | null = {};
 
     if (hasObjData) {
       // Field names for context and metadata is the same, merge the metadata into the same field name
@@ -398,15 +396,15 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       }
     }
 
-    if (this._config.hooks.onBeforeDataOut) {
-      d = this._config.hooks.onBeforeDataOut({
+    if (this.pluginManager.hasPlugins()) {
+      d = this.pluginManager.runOnBeforeDataOut({
         data: hasObjData ? d : undefined,
         logLevel,
       });
     }
 
-    if (this._config.hooks.shouldSendToLogger) {
-      const shouldSend = this._config.hooks.shouldSendToLogger({
+    if (this.pluginManager.hasPlugins()) {
+      const shouldSend = this.pluginManager.runShouldSendToLogger({
         messages: [...params],
         data: hasObjData ? d : undefined,
         logLevel,
@@ -457,7 +455,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         // Winston does not have a trace type
         if (this.loggerType === LoggerType.WINSTON) {
           this.loggerInstance.debug(...params);
-        } else {
+        } else if (this.loggerInstance.trace) {
           this.loggerInstance.trace(...params);
         }
         break;

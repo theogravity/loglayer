@@ -1,5 +1,6 @@
 import { PassThrough } from "node:stream";
 import { serializeError } from "serialize-error";
+import { describe, expect, it } from "vitest";
 import winston from "winston";
 import { LogLayer } from "../LogLayer";
 import { LoggerType } from "../types";

@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 2
 
       - name: Install Dependencies
-        run: npm install --frozen-lockfile
+        run: npm install --frozen-lockfile --prefer-offline
 
       - name: Build workspace packages
         run: npm run build
