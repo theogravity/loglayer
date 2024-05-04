@@ -1,5 +1,17 @@
 # loglayer
 
+## 4.1.0
+
+### Minor Changes
+
+- [#15](https://github.com/theogravity/loglayer/pull/15) [`c583c94`](https://github.com/theogravity/loglayer/commit/c583c944f484df20be4796f77e517ed8aa48a0bf) Thanks [@theogravity](https://github.com/theogravity)! - Adds an optional `id` field to plugins and the ability to manage plugins.
+
+  The following methods have been added:
+
+  - `LogLayer#removePlugin(id: string)`
+  - `LogLayer#enablePlugin(id: string)`
+  - `LogLayer#disablePlugin(id: string)`
+
 ## 4.0.0
 
 ### Major Changes
@@ -52,7 +64,7 @@
     ];
   }
   ```
-  
+
   Type changes:
 
   - `LogLayerHooksConfig` -> `LogLayerPlugin`
