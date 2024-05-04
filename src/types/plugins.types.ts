@@ -34,6 +34,11 @@ export type PluginShouldSendToLoggerFn = (params: PluginShouldSendToLoggerParams
 
 export interface LogLayerPlugin {
   /**
+   * Unique identifier for the plugin. Used for selectively disabling / enabling
+   * and removing the plugin.
+   */
+  id?: string;
+  /**
    * If true, the plugin will skip execution
    */
   disabled?: boolean;

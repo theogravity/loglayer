@@ -15,6 +15,26 @@ export class PluginManager<Data extends Record<string, any> = Record<string, any
     this.plugins.push(...plugins);
   }
 
+  enablePlugin(id: string) {
+    const plugin = this.plugins.find((plugin) => plugin.id === id);
+
+    if (plugin) {
+      plugin.disabled = false;
+    }
+  }
+
+  disablePlugin(id: string) {
+    const plugin = this.plugins.find((plugin) => plugin.id === id);
+
+    if (plugin) {
+      plugin.disabled = true;
+    }
+  }
+
+  removePlugin(id: string) {
+    this.plugins = this.plugins.filter((plugin) => plugin.id !== id);
+  }
+
   /**
    * Runs plugins that defines onBeforeDataOut.
    */

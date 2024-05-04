@@ -125,6 +125,27 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   /**
+   * Enables a plugin by id.
+   */
+  enablePlugin(id: string) {
+    this.pluginManager.enablePlugin(id);
+  }
+
+  /**
+   * Disables a plugin by id.
+   */
+  disablePlugin(id: string) {
+    this.pluginManager.disablePlugin(id);
+  }
+
+  /**
+   * Removes a plugin by id.
+   */
+  removePlugin(id: string) {
+    this.pluginManager.removePlugin(id);
+  }
+
+  /**
    * Specifies metadata to include with the log message
    */
   withMetadata(metadata: Record<string, any>) {
@@ -173,7 +194,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
     const formatLogConf: FormatLogParams = {
       logLevel: opts?.logLevel || LogLevel.error,
       data: {
-        [errConfig.fieldName ?? "err"]: errConfig.serializer ? errConfig.serializer(error) : error,
+        [errConfig.fieldName!]: errConfig.serializer ? errConfig.serializer(error) : error,
       },
     };
 

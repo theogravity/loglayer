@@ -20,6 +20,12 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
 
   addPlugins(plugins: Array<LogLayerPlugin>) {}
 
+  removePlugin(id: string) {}
+
+  enablePlugin(id: string) {}
+
+  disablePlugin(id: string) {}
+
   withPrefix(prefix: string) {
     return new MockLogLayer();
   }
