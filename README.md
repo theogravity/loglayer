@@ -67,10 +67,6 @@ logLayer
       - [Serializing errors](#serializing-errors)
       - [Data output options](#data-output-options)
   - [Child logger](#child-logger)
-  - [Plugins](#plugins)
-    - [Add plugins outside of configuration](#add-plugins-outside-of-configuration)
-    - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
-    - [Conditionally send or not send an entry to the logging library](#conditionally-send-or-not-send-an-entry-to-the-logging-library)
   - [Disable / enable logging](#disable--enable-logging)
   - [Logging messages](#logging-messages)
   - [Including a prefix with each log message](#including-a-prefix-with-each-log-message)
@@ -88,6 +84,16 @@ logLayer
     - [With a message](#with-a-message-1)
     - [Standalone](#standalone-1)
   - [Get the attached logger library instance](#get-the-attached-logger-library-instance)
+  - [Plugins](#plugins)
+    - [Plugin definition](#plugin-definition)
+    - [Lifecycle](#lifecycle)
+    - [Management](#management)
+      - [Add plugins outside of configuration](#add-plugins-outside-of-configuration)
+      - [Disable / enable a plugin](#disable--enable-a-plugin)
+      - [Remove a plugin](#remove-a-plugin)
+    - [Callbacks](#callbacks)
+      - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
+      - [Conditionally send or not send an entry to the logging library](#conditionally-send-or-not-send-an-entry-to-the-logging-library)
 - [Mocking for tests](#mocking-for-tests)
 - [Running tests](#running-tests)
 
@@ -515,154 +521,6 @@ const parentLog = new LogLayer(<config>).withContext({ some: 'data' })
 const childLog = parentLog.child()
 ```
 
-### Plugins
-
-Plugins are executed in the order they are defined.
-
-```typescript
-export interface LogLayerPlugin {
-  /**
-   * If true, the plugin will skip execution
-   */
-  disabled?: boolean;
-  onBeforeDataOut?(params: PluginBeforeDataOutParams): Record<string, any> | null | undefined;
-  shouldSendToLogger?(params: PluginShouldSendToLoggerParams): boolean;
-}
-```
-
-The event lifecycle is as follows:
-
-1. `onBeforeDataOut` is called to modify the data object before it is sent to the logging library.
-2. `shouldSendToLogger` is called to determine if the log entry should be sent to the logging library.
-
-#### Add plugins outside of configuration
-
-`LogLayer#addPlugins(plugins: Array<LogLayerPlugin>)`
-
-This adds new plugins to the existing configuration.
-
-#### Modify / create object data before being sent to the logging library
-
-```typescript
-export interface PluginBeforeDataOutParams {
-  /**
-   * Log level of the data
-   */
-  logLevel: LogLevel;
-  /**
-   * The object containing metadata / context / error data. This
-   * is `undefined` if there is no object with data.
-   */
-  data?: Record<string, any>;
-}
-```
-
-`onBeforeDataOut(params: PluginBeforeDataOutParams) => Record<string, any> | null | undefined`
-
-The callback `onBeforeDataOut` can be used to modify the data object
-that contains the context / metadata / error data or create a custom object
-before it is sent out to the logging library.
-
-Return `null` or `undefined` to not modify the data object.
-
-Subsequent plugins will have the `data` property updated from the results of the previous plugin if a result was returned from it.
-
-```typescript
-import { 
-  LoggerType, 
-  LogLayer, 
-  PluginBeforeDataOutFn,
-  PluginBeforeDataOutParams,
-} from 'loglayer'
-
-const onBeforeDataOut: PluginBeforeDataOutFn = (data: PluginBeforeDataOutParams) => {
-  if (data) {
-    data.modified = true 
-  }
-  
-  return data 
-}
-
-const log = new LogLayer({
-  ...
-  plugins: [{
-    onBeforeDataOut,
-  }]
-})
-
-log.withContext({ test: 'data' }).info('this is a test message')
-```
-
-```json
-{
-  "test": "data",
-  "modified": true,
-  "msg": "this is a test message"
-}
-```
-
-#### Conditionally send or not send an entry to the logging library
-
-```typescript
-export interface PluginShouldSendToLoggerParams {
-  /**
-   * Message data that is copied from the original.
-   */
-  messages: MessageDataType[];
-  /**
-   * Log level of the message
-   */
-  logLevel: LogLevel;
-  /**
-   * The object containing metadata / context / error data. This
-   * is `undefined` if there is no object with data.
-   */
-  data?: Record<string, any>;
-}
-```
-
-`shouldSendToLogger(params: PluginShouldSendToLoggerParams) => boolean`
-
-The callback `shouldSendToLogger` is called before the data is sent to the logger. 
-Return false to omit sending to the logger. Useful for isolating specific log 
-messages for debugging / troubleshooting. If multiple plugins are defined, all must return true for the log entry to be sent.
-
-*Parameters*
-
-- `messages`: The parameters sent via `info()`, `warn()`, `error()`, `debug()`, etc. Most will use `messages[0]`. This data is copied from the original.
-- `[data]`: The data object that contains the context / metadata / error data. This is `null` if there is no data. 
-  *  If `onBeforeDataOut` was used, this will be the result of the data processed from all plugins that defined it.
-
-```typescript
-import { 
-  LoggerType, 
-  LogLayer, 
-  PluginShouldSendToLoggerFn, 
-  PluginShouldSendToLoggerParams
-} from 'loglayer'
-
-const shouldSendToLogger: PluginShouldSendToLoggerFn = ({ messages }: PluginShouldSendToLoggerParams) => {
-  // Define custom logic here (ex: regex) to determine if the log should be sent out or not
-  
-  // Read the first parameter of info() / warn() / error() / debug() / etc
-  if (messages[0] === 'do not send out') {
-    return false;
-  }
-  
-  return true;
-}
-
-const log = new LogLayer({
-  ...
-  plugins: [{
-    shouldSendToLogger,
-  }]
-})
-
-// Will not send the log entry to the logger
-log.info('do not send out')
-```
-
 ### Disable / enable logging
 
 - `LogLayer#enableLogging(): LogLayer`
@@ -881,6 +739,184 @@ log.errorOnly(new Error('test'), { copyMsg: false })
 
 Returns back the backing logger used in the event you need to call
 methods specific to that logging library.
+
+### Plugins
+
+#### Plugin definition
+
+A plugin is a plain object that defines callbacks to be executed at specific points in the log lifecycle.
+
+In advanced use-cases, you may want to create a class that implements the plugin interface.
+
+```typescript
+export interface LogLayerPlugin {
+  /**
+   * Unique identifier for the plugin. Used for selectively disabling / enabling
+   * and removing the plugin.
+   */
+  id?: string;
+  /**
+   * If true, the plugin will skip execution
+   */
+  disabled?: boolean;
+  onBeforeDataOut?(params: PluginBeforeDataOutParams): Record<string, any> | null | undefined;
+  shouldSendToLogger?(params: PluginShouldSendToLoggerParams): boolean;
+}
+```
+
+#### Lifecycle
+
+Plugins are executed in the order they are defined.
+
+The event lifecycle is as follows:
+
+1. `onBeforeDataOut` is called to modify the data object before it is sent to the logging library.
+2. `shouldSendToLogger` is called to determine if the log entry should be sent to the logging library.
+
+#### Management
+
+##### Add plugins outside of configuration
+
+`LogLayer#addPlugins(plugins: Array<LogLayerPlugin>)`
+
+This adds new plugins to the existing configuration.
+
+##### Disable / enable a plugin
+
+The `id` must be defined in the plugin to disable / enable it.
+
+- `LogLayer#disablePlugin(id: string): LogLayer`
+- `LogLayer#enablePlugin(id: string): LogLayer`
+
+##### Remove a plugin
+
+The `id` must be defined in the plugin to remove it.
+
+`LogLayer#removePlugin(id: string): LogLayer`
+
+#### Callbacks
+
+##### Modify / create object data before being sent to the logging library
+
+```typescript
+export interface PluginBeforeDataOutParams {
+  /**
+   * Log level of the data
+   */
+  logLevel: LogLevel;
+  /**
+   * The object containing metadata / context / error data. This
+   * is `undefined` if there is no object with data.
+   */
+  data?: Record<string, any>;
+}
+```
+
+`onBeforeDataOut(params: PluginBeforeDataOutParams) => Record<string, any> | null | undefined`
+
+The callback `onBeforeDataOut` can be used to modify the data object
+that contains the context / metadata / error data or create a custom object
+before it is sent out to the logging library.
+
+Return `null` or `undefined` to not modify the data object.
+
+Subsequent plugins will have the `data` property updated from the results of the previous plugin if a result was returned from it.
+
+```typescript
+import { 
+  LoggerType, 
+  LogLayer, 
+  PluginBeforeDataOutFn,
+  PluginBeforeDataOutParams,
+} from 'loglayer'
+
+const onBeforeDataOut: PluginBeforeDataOutFn = (params: PluginBeforeDataOutParams) => {
+  if (params.data) {
+    params.data.modified = true 
+  }
+  
+  return params.data 
+}
+
+const log = new LogLayer({
+  ...
+  plugins: [{
+    onBeforeDataOut,
+  }]
+})
+
+log.withContext({ test: 'data' }).info('this is a test message')
+```
+
+```json
+{
+  "test": "data",
+  "modified": true,
+  "msg": "this is a test message"
+}
+```
+
+##### Conditionally send or not send an entry to the logging library
+
+```typescript
+export interface PluginShouldSendToLoggerParams {
+  /**
+   * Message data that is copied from the original.
+   */
+  messages: MessageDataType[];
+  /**
+   * Log level of the message
+   */
+  logLevel: LogLevel;
+  /**
+   * The object containing metadata / context / error data. This
+   * is `undefined` if there is no object with data.
+   */
+  data?: Record<string, any>;
+}
+```
+
+`shouldSendToLogger(params: PluginShouldSendToLoggerParams) => boolean`
+
+The callback `shouldSendToLogger` is called before the data is sent to the logger.
+Return false to omit sending to the logger. Useful for isolating specific log
+messages for debugging / troubleshooting. If multiple plugins are defined, all must return true for the log entry to be sent.
+
+*Parameters*
+
+- `messages`: The parameters sent via `info()`, `warn()`, `error()`, `debug()`, etc. Most will use `messages[0]`. This data is copied from the original.
+- `[data]`: The data object that contains the context / metadata / error data. This is `null` if there is no data.
+  *  If `onBeforeDataOut` was used, this will be the result of the data processed from all plugins that defined it.
+
+```typescript
+import { 
+  LoggerType, 
+  LogLayer, 
+  PluginShouldSendToLoggerFn, 
+  PluginShouldSendToLoggerParams
+} from 'loglayer'
+
+const shouldSendToLogger: PluginShouldSendToLoggerFn = ({ messages }: PluginShouldSendToLoggerParams) => {
+  // Define custom logic here (ex: regex) to determine if the log should be sent out or not
+  
+  // Read the first parameter of info() / warn() / error() / debug() / etc
+  if (messages[0] === 'do not send out') {
+    return false;
+  }
+  
+  return true;
+}
+
+const log = new LogLayer({
+  ...
+  plugins: [{
+    shouldSendToLogger,
+  }]
+})
+
+// Will not send the log entry to the logger
+log.info('do not send out')
+```
 
 ## Mocking for tests
 

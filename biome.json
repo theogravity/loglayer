@@ -24,6 +24,9 @@
     "enabled": true,
     "ignore": ["build/*", "coverage/*"],
     "rules": {
+      "style": {
+        "noNonNullAssertion": "off"
+      },
       "performance": {
         "noDelete": "off"
       },

@@ -14,10 +14,12 @@ describe("PluginManager", () => {
   beforeEach(() => {
     plugins = [
       {
+        id: "plugin1",
         onBeforeDataOut: vi.fn((params) => ({ ...params.data, added: "test" })),
         shouldSendToLogger: vi.fn(() => true),
       },
       {
+        id: "plugin2",
         onBeforeDataOut: vi.fn((params) => ({ ...params.data, modified: "yes" })),
         shouldSendToLogger: vi.fn(() => false),
       },
@@ -92,5 +94,22 @@ describe("PluginManager", () => {
 
     const shouldSend2 = pluginManager.runShouldSendToLogger(params);
     expect(shouldSend2).toBe(true);
+  });
+
+  it("disables a plugin", () => {
+    pluginManager.disablePlugin(plugins[0].id!);
+    expect(plugins[0].disabled).toBe(true);
+  });
+
+  it("enables a plugin", () => {
+    plugins[0].disabled = true;
+    pluginManager.enablePlugin(plugins[0].id!);
+    expect(plugins[0].disabled).toBe(false);
+  });
+
+  it("removes a plugin", () => {
+    pluginManager.removePlugin(plugins[0].id!);
+    expect(pluginManager.hasPlugins()).toBe(true);
+    expect(pluginManager["plugins"].length).toBe(1);
   });
 });

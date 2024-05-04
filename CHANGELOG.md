@@ -4,8 +4,7 @@
 
 ### Major Changes
 
-- [#13](https://github.com/theogravity/loglayer/pull/13) [`d1a8cc2`](https://github.com/theogravity/loglayer/commit/d1a8cc21e4191547e839d334c9386e25f0410235) Thanks [@theogravity](https://github.com/theogravity)! - - Removes hooks and adds a plugin system where you can
-  define multiple hooks to run instead.
+- [#13](https://github.com/theogravity/loglayer/pull/13) [`d1a8cc2`](https://github.com/theogravity/loglayer/commit/d1a8cc21e4191547e839d334c9386e25f0410235) Thanks [@theogravity](https://github.com/theogravity)! - - Removes hooks and adds a plugin system where you can define multiple hooks to run instead.
 
   - Adds esm and cjs builds to the package
 
@@ -22,10 +21,10 @@
 
   Your 3.x definition may look like this:
 
-  ```
+  ```typescript
   {
     hooks: {
-      onBeforeDataOut: (data) => {
+      onBeforeDataOut: ({ data }) => {
         // do something with data
         return data;
       },
@@ -58,6 +57,8 @@
 
   - Replace `hooks` with `plugins`
   - For your existing hooks, move them into the `plugins` array where each entry is an object with the hook definition
+
+  See `README.md` for more details.
 
 ## 3.1.0
 
