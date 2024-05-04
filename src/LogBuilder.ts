@@ -115,9 +115,9 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
   }
 
   private formatLog(logLevel: LogLevel, params: any[]) {
-    const { error: errConfig } = this.structuredLogger._config;
+    const { error: errConfig, muteMetadata } = this.structuredLogger._config;
 
-    const hasData = (this.structuredLogger._config.muteMetadata ? false : this.hasMetadata) || !!this.err;
+    const hasData = (muteMetadata ? false : this.hasMetadata) || !!this.err;
 
     const data = {
       ...this.metadata,
