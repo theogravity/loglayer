@@ -52,6 +52,14 @@
     ];
   }
   ```
+  
+  Type changes:
+
+  - `LogLayerHooksConfig` -> `LogLayerPlugin`
+  - `HookBeforeDataOutParams` -> `PluginBeforeDataOutParams`
+  - `HookBeforeDataOutFn` -> `PluginBeforeDataOutFn`
+  - `HookShouldSendToLoggerParams` -> `PluginShouldSendToLoggerParams`
+  - `HookShouldSendToLoggerFn` -> `PluginShouldSendToLoggerFn`
 
   Summary:
 
