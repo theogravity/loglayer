@@ -343,9 +343,9 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   private formatContext() {
-    const { context: contextCfg } = this._config;
+    const { context: contextCfg, muteContext } = this._config;
 
-    if (this.hasContext && !this._config.muteContext) {
+    if (this.hasContext && !muteContext) {
       if (contextCfg.fieldName) {
         return {
           [contextCfg.fieldName]: {
@@ -363,9 +363,9 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   private formatMetadata(data: Record<string, any> | null = null) {
-    const { metadata: metadataCfg } = this._config;
+    const { metadata: metadataCfg, muteMetadata } = this._config;
 
-    if (data && !this._config.muteMetadata) {
+    if (data && !muteMetadata) {
       if (metadataCfg.fieldName) {
         return {
           [metadataCfg.fieldName]: {
@@ -383,30 +383,34 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   _formatMessage(messages: MessageDataType[] = []) {
-    if (this._config.prefix && typeof messages[0] === "string") {
-      messages[0] = `${this._config.prefix} ${messages[0]}`;
+    const { prefix } = this._config;
+
+    if (prefix && typeof messages[0] === "string") {
+      messages[0] = `${prefix} ${messages[0]}`;
     }
   }
 
   _formatLog({ logLevel, params = [], data = null }: FormatLogParams) {
-    if (!this._config.enabled) {
+    const { enabled, muteContext, context, metadata, consoleDebug } = this._config;
+
+    if (!enabled) {
       return;
     }
 
-    const hasObjData = !!data || (this._config.muteContext ? false : this.hasContext);
+    const hasObjData = !!data || (muteContext ? false : this.hasContext);
 
     let d: Record<string, any> | undefined | null = {};
 
     if (hasObjData) {
       // Field names for context and metadata is the same, merge the metadata into the same field name
-      if (this._config.context.fieldName && this._config.context.fieldName === this._config.metadata.fieldName) {
-        const contextData = this.formatContext()[this._config.context.fieldName];
-        const metadata = this.formatMetadata(data)[this._config.metadata.fieldName];
+      if (context.fieldName && context.fieldName === metadata.fieldName) {
+        const contextData = this.formatContext()[context.fieldName];
+        const updatedMetadata = this.formatMetadata(data)[metadata.fieldName];
 
         d = {
-          [this._config.context.fieldName]: {
+          [context.fieldName]: {
             ...contextData,
-            ...metadata,
+            ...updatedMetadata,
           },
         };
       } else {
@@ -452,25 +456,25 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
     switch (logLevel) {
       case LogLevel.info:
-        if (this._config.consoleDebug) {
+        if (consoleDebug) {
           console.info(...params);
         }
         this.loggerInstance.info(...params);
         break;
       case LogLevel.warn:
-        if (this._config.consoleDebug) {
+        if (consoleDebug) {
           console.warn(...params);
         }
         this.loggerInstance.warn(...params);
         break;
       case LogLevel.error:
-        if (this._config.consoleDebug) {
+        if (consoleDebug) {
           console.error(...params);
         }
         this.loggerInstance.error(...params);
         break;
       case LogLevel.trace:
-        if (this._config.consoleDebug) {
+        if (consoleDebug) {
           console.debug(...params);
         }
         // Winston does not have a trace type
@@ -481,13 +485,13 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         }
         break;
       case LogLevel.debug:
-        if (this._config.consoleDebug) {
+        if (consoleDebug) {
           console.debug(...params);
         }
         this.loggerInstance.debug(...params);
         break;
       default:
-        if (this._config.consoleDebug) {
+        if (consoleDebug) {
           console.log(...params);
         }
         // @ts-ignore
