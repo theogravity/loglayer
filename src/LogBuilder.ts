@@ -99,6 +99,17 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
   }
 
   /**
+   * Sends a log message to the logging library under the fatal log level
+   *
+   * The logging library may or may not support multiple message parameters and only
+   * the first parameter would be used.
+   */
+  fatal(...messages: MessageDataType[]) {
+    this.structuredLogger._formatMessage(messages);
+    this.formatLog(LogLevel.fatal, messages);
+  }
+
+  /**
    * All logging inputs are dropped and stops sending logs to the logging library.
    */
   disableLogging() {

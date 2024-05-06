@@ -319,7 +319,7 @@ app.listen(port, () => {
 
 Generics (all are optional):
 
-- `LoggerInstanceType`: A definition that implements log `info` / `warn` / `error` / `trace` / `debug` methods.
+- `LoggerInstanceType`: A definition that implements log `info` / `warn` / `error` / `trace` / `debug` / `fatal` methods.
   * Used for returning the proper type in the `getLoggerInstance()` method.
 - `ErrorType`: A type that represents the `Error` type. Used with the serializer and error methods. Defaults to `any`.
 
@@ -563,8 +563,15 @@ const childLog = parentLog.child()
 - `LogLayer#error(...messages: MessageDataType[]): void`
 - `LogLayer#debug(...messages: MessageDataType[]): void`
 - `LogLayer#trace(...messages: MessageDataType[]): void`
+- `LogLayer#fatal(...messages: MessageDataType[]): void`
 
 `type MessageDataType = string | number | null | undefined`
+
+Some logging libraries do not support a `trace` or `fatal` level. `loglayer` will re-map
+to the following levels in that situation:
+
+  * `trace` -> `debug`
+  * `fatal` -> `error`
 
 *Your logging library may or may not support passing multiple parameters. See your logging library's 
 documentation for more details.*

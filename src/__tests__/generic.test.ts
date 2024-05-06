@@ -2,11 +2,9 @@ import { describe, expect, it } from "vitest";
 import { LogLayer } from "../LogLayer";
 import {
   type LogLayerConfig,
-  LogLayerPlugin,
   LogLevel,
   LoggerType,
   type PluginBeforeDataOutFn,
-  PluginBeforeDataOutParams,
   type PluginShouldSendToLoggerFn,
 } from "../types";
 

@@ -1,5 +1,5 @@
 import { PassThrough } from "node:stream";
-import log4js, { AppenderModule } from "log4js";
+import log4js from "log4js";
 import { describe, expect, it } from "vitest";
 import { LogLayer } from "../LogLayer";
 import { LoggerType } from "../types";
