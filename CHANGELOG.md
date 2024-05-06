@@ -1,5 +1,26 @@
 # loglayer
 
+## 4.2.0
+
+### Minor Changes
+
+- [#23](https://github.com/theogravity/loglayer/pull/23) [`e6323b7`](https://github.com/theogravity/loglayer/commit/e6323b7f182375aa28ee463556a893197c487af8) Thanks [@theogravity](https://github.com/theogravity)! - Add [`signale`](https://github.com/klaudiosinani/signale) support
+
+  See README.md for more details.
+
+- [#20](https://github.com/theogravity/loglayer/pull/20) [`c3b5468`](https://github.com/theogravity/loglayer/commit/c3b5468f961e89ccf1c3ac673d17ae5ef2905fa5) Thanks [@theogravity](https://github.com/theogravity)! - Add [`log4js-node`](https://github.com/log4js-node/log4js-node) support
+
+  See README.md for more details.
+
+- [#22](https://github.com/theogravity/loglayer/pull/22) [`2dfe830`](https://github.com/theogravity/loglayer/commit/2dfe830170b55ffdaaa1783a056ae6c08280187a) Thanks [@theogravity](https://github.com/theogravity)! - Add `fatal` log level support
+
+  - Adds the `fatal()` method in `loglayer` to write to a `fatal`
+    log level.
+    - Any logging libraries that do not support `fatal` level will
+      be written as an `error` level instead.
+
+- [#24](https://github.com/theogravity/loglayer/pull/24) [`f989f15`](https://github.com/theogravity/loglayer/commit/f989f15d8ead2a8bf1e8ff5b6f0b4e810744fad6) Thanks [@theogravity](https://github.com/theogravity)! - Add consola support
+
 ## 4.1.1
 
 ### Patch Changes
