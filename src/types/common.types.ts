@@ -16,6 +16,7 @@ export enum LoggerType {
   ROARR = "roarr",
   PINO = "pino",
   BUNYAN = "bunyan",
+  LOG4JS_NODE = "log4js-node",
   CONSOLE = "console",
 }
 
