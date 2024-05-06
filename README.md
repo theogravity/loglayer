@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 
 Standardize the way you write logs with the `loglayer` abstraction using your existing logging library 
-(`bunyan` / `winston` / `pino` / `roarr` / `log4js-node` / `electron-log` / `signale` / etc).
+(`bunyan` / `winston` / `pino` / `roarr` / `log4js-node` / `electron-log` / `signale` / `consola` / etc).
 
 Spend less time from having to *define* your logs and spend more writing them.
 
@@ -53,14 +53,15 @@ logLayer
 
 - [Installation](#installation)
 - [Example installations](#example-installations)
-  - [`console`](#console)
-  - [`pino`](#pino)
   - [`bunyan`](#bunyan)
-  - [`winston`](#winston)
-  - [`roarr`](#roarr)
+  - [`consola`](#consola)
+  - [`console`](#console) 
   - [`electron-log`](#electron-log)
   - [`log4js-node`](#log4js-node)
+  - [`pino`](#pino)
+  - [`roarr`](#roarr)
   - [`signale`](#signale)
+  - [`winston`](#winston)
 - [Example integration](#example-integration)
 - [API](#api)
   - [Constructor](#constructor)
@@ -289,6 +290,26 @@ const log = new LogLayer<Signale>({
 // if you need to use a signale-specific method
 const s = log.getLoggerInstance()
 s.success('Operation successful');
+```
+
+### `consola`
+
+[consola docs](https://github.com/unjs/consola)
+
+- The default log level is `3` which excludes `debug` and `trace`. Set to `5` for both. 
+
+```typescript
+import { LogLayer, LoggerType } from 'loglayer'
+import { type ConsolaInstance, createConsola } from "consola";
+
+const log = new LogLayer<ConsolaInstance>({
+  logger: {
+    instance: createConsola({
+      level: 5
+    }),
+    type: LoggerType.CONSOLA,
+  },
+})
 ```
 
 ## Example integration
