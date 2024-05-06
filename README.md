@@ -472,13 +472,17 @@ Use the `other` value for log libraries not supported here. `loglayer` may or ma
 work with it.
 
 ```typescript
-enum LoggerType {
-  OTHER = 'other',
-  WINSTON = 'winston',
-  ROARR = 'roarr',
-  PINO = 'pino',
-  BUNYAN = 'bunyan',
-  CONSOLE = 'console',
+export enum LoggerType {
+  BUNYAN = "bunyan",
+  CONSOLA = "consola",
+  CONSOLE = "console",
+  ELECTRON_LOG = "electronLog",
+  LOG4JS_NODE = "log4js-node",
+  PINO = "pino",
+  ROARR = "roarr",
+  SIGNALE = "signale",
+  WINSTON = "winston",
+  OTHER = "other",
 }
 ```
 
