@@ -1,5 +1,11 @@
 # loglayer
 
+## 4.2.1
+
+### Patch Changes
+
+- [#25](https://github.com/theogravity/loglayer/pull/25) [`e5632c8`](https://github.com/theogravity/loglayer/commit/e5632c8470f5a16fdf5d70aff07e66ca51669fb0) Thanks [@theogravity](https://github.com/theogravity)! - Readme updates
+
 ## 4.2.0
 
 ### Minor Changes
