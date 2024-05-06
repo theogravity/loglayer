@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 
 Standardize the way you write logs with the `loglayer` abstraction using your existing logging library 
-(`bunyan` / `winston` / `pino` / `roarr` / `log4js-node` / `electron-log` / etc).
+(`bunyan` / `winston` / `pino` / `roarr` / `log4js-node` / `electron-log` / `signale` / etc).
 
 Spend less time from having to *define* your logs and spend more writing them.
 
@@ -60,6 +60,7 @@ logLayer
   - [`roarr`](#roarr)
   - [`electron-log`](#electron-log)
   - [`log4js-node`](#log4js-node)
+  - [`signale`](#signale)
 - [Example integration](#example-integration)
 - [API](#api)
   - [Constructor](#constructor)
@@ -262,6 +263,32 @@ const log = new LogLayer({
     type: LoggerType.LOG4JS_NODE,
   },
 })
+```
+
+### `signale`
+
+[signale docs](https://github.com/klaudiosinani/signale)
+
+- `signale` only works in `node.js` and not the browser
+- It is generally used for CLI-based applications as it offers log levels and methods
+that would be valuable for CLI output
+  * `loglayer` does not have integration for the other cli-specific levels (eg: `signale.success()`)
+  * Use `LogLayer#getLoggerInstance()` to get the `signale` instance to call those levels
+
+```typescript
+import { LogLayer, LoggerType } from 'loglayer'
+import { Signale } from 'signale'
+
+const log = new LogLayer<Signale>({
+  logger: {
+    instance: new Signale(),
+    type: LoggerType.SIGNALE,
+  },
+})
+
+// if you need to use a signale-specific method
+const s = log.getLoggerInstance()
+s.success('Operation successful');
 ```
 
 ## Example integration
