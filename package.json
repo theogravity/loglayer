@@ -35,6 +35,7 @@
     "livetest:winston": "ts-node-dev livetests/winston.ts",
     "livetest:log4js-node": "ts-node-dev livetests/log4js-node.ts",
     "livetest:signale": "ts-node-dev livetests/signale.ts",
+    "livetest:consola": "ts-node-dev livetests/consola.ts",
     "prepare": "husky install",
     "release": "changeset publish",
     "test": "vitest run",
@@ -70,7 +71,8 @@
     "abstraction",
     "pino",
     "electron",
-    "signale"
+    "signale",
+    "consola"
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.6.4",
@@ -83,6 +85,7 @@
     "@types/roarr": "^2.14.3",
     "@types/signale": "^1.4.7",
     "bunyan": "^1.8.15",
+    "consola": "^3.2.3",
     "express": "^4.19.2",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.2",

@@ -453,6 +453,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
     if (d && hasObjData) {
       switch (this.loggerType) {
+        case LoggerType.CONSOLA:
         case LoggerType.ELECTRON_LOG:
         case LoggerType.LOG4JS_NODE:
         case LoggerType.SIGNALE:
