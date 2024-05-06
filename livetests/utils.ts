@@ -1,50 +1,53 @@
-import { LogLayer } from '../src/LogLayer'
+import type { LogLayer } from "../src";
 
 export function testMethods(p: LogLayer) {
-  console.log('===== info() ====')
-  p.info('info', 'message', '3')
+  console.log("===== info() ====");
+  p.info("info", "message", "3");
 
-  console.log('===== warn() ====')
-  p.warn('warn message %s', 1)
+  console.log("===== warn() ====");
+  p.warn("warn message %s", 1);
 
-  console.log('===== error() ====')
-  p.error('error message')
+  console.log("===== error() ====");
+  p.error("error message");
 
-  console.log('===== debug() ====')
-  p.debug('debug message')
+  console.log("===== debug() ====");
+  p.debug("debug message");
 
-  console.log('===== trace() ====')
-  p.trace('trace message')
+  console.log("===== trace() ====");
+  p.trace("trace message");
 
-  console.log('===== withMetadata() ====')
+  console.log("===== fatal() ====");
+  p.fatal("fatal message");
+
+  console.log("===== withMetadata() ====");
   p.withMetadata({
-    test: 'metadata',
-    test2: 'metadata2',
-  }).trace('trace message')
+    test: "metadata",
+    test2: "metadata2",
+  }).trace("trace message");
 
-  console.log('===== withError() ====')
-  p.withError(new Error('error object')).trace('trace message')
+  console.log("===== withError() ====");
+  p.withError(new Error("error object")).trace("trace message");
 
-  console.log('===== withError() + withMetadata() ====')
+  console.log("===== withError() + withMetadata() ====");
   p.withMetadata({
-    test: 'metadata',
-    test2: 'metadata2',
+    test: "metadata",
+    test2: "metadata2",
   })
-    .withError(new Error('error object'))
-    .error('error message')
+    .withError(new Error("error object"))
+    .error("error message");
 
-  console.log('===== onlyError() ====')
-  p.errorOnly(new Error('error message'))
+  console.log("===== onlyError() ====");
+  p.errorOnly(new Error("error message"));
 
-  console.log('===== onlyMetadata() ====')
+  console.log("===== onlyMetadata() ====");
   p.metadataOnly({
-    only: 'metadata',
-  })
+    only: "metadata",
+  });
 
-  console.log('===== withContext() ====')
+  console.log("===== withContext() ====");
   p.withContext({
-    test: 'data',
-  })
+    test: "data",
+  });
 
-  p.info('context data')
+  p.info("context data");
 }

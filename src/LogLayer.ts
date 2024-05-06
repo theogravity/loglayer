@@ -288,6 +288,17 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   /**
+   * Sends a log message to the logging library under the fatal log level
+   *
+   * The logging library may or may not support multiple message parameters and only
+   * the first parameter would be used.
+   */
+  fatal(...messages: MessageDataType[]) {
+    this._formatMessage(messages);
+    this._formatLog({ logLevel: LogLevel.fatal, params: messages });
+  }
+
+  /**
    * All logging inputs are dropped and stops sending logs to the logging library.
    */
   disableLogging() {
@@ -484,6 +495,8 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
           this.loggerInstance.debug(...params);
         } else if (this.loggerInstance.trace) {
           this.loggerInstance.trace(...params);
+        } else {
+          this.loggerInstance.debug(...params);
         }
         break;
       case LogLevel.debug:
@@ -491,6 +504,23 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
           console.debug(...params);
         }
         this.loggerInstance.debug(...params);
+        break;
+      case LogLevel.fatal:
+        if (consoleDebug) {
+          console.debug(...params);
+        }
+
+        if (
+          this.loggerType === LoggerType.WINSTON ||
+          this.loggerType === LoggerType.ELECTRON_LOG ||
+          this.loggerType === LoggerType.CONSOLE
+        ) {
+          this.loggerInstance.error(...params);
+        } else if (this.loggerInstance.fatal) {
+          this.loggerInstance.fatal(...params);
+        } else {
+          this.loggerInstance.error(...params);
+        }
         break;
       default:
         if (consoleDebug) {

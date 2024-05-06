@@ -16,6 +16,8 @@ export class MockLogBuilder implements ILogBuilder {
 
   warn(...messages: MessageDataType[]): void {}
 
+  fatal(...messages: MessageDataType[]): void {}
+
   enableLogging() {
     return this;
   }

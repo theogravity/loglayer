@@ -33,7 +33,7 @@
     "livetest:pino": "ts-node-dev livetests/pino.ts",
     "livetest:roarr": "ROARR_LOG=true ts-node-dev livetests/roarr.ts",
     "livetest:winston": "ts-node-dev livetests/winston.ts",
-    "livetest:log4js": "ts-node-dev livetests/log4js-node.ts",
+    "livetest:log4js-node": "ts-node-dev livetests/log4js-node.ts",
     "prepare": "husky install",
     "release": "changeset publish",
     "test": "vitest run",

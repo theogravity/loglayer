@@ -14,6 +14,7 @@ export interface LoggerLibrary {
   error(...data: any[]): void;
   trace?: (...data: any[]) => void;
   debug(...data: any[]): void;
+  fatal?: (...data: any[]) => void;
 }
 
 export interface ILogBuilder {
@@ -52,6 +53,13 @@ export interface ILogBuilder {
    * the first parameter would be used.
    */
   trace(...messages: MessageDataType[]): void;
+  /**
+   * Sends a log message to the logging library under the fatal log level
+   *
+   * The logging library may or may not support multiple message parameters and only
+   * the first parameter would be used.
+   */
+  fatal(...messages: MessageDataType[]): void;
 }
 
 export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, ErrorType = ErrorDataType>
