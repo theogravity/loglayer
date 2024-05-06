@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 
 Standardize the way you write logs with the `loglayer` abstraction using your existing logging library 
-(`bunyan` / `winston` / `pino` / `roarr` / `electron-log` / etc).
+(`bunyan` / `winston` / `pino` / `roarr` / `log4js-node` / `electron-log` / etc).
 
 Spend less time from having to *define* your logs and spend more writing them.
 
@@ -59,6 +59,7 @@ logLayer
   - [`winston`](#winston)
   - [`roarr`](#roarr)
   - [`electron-log`](#electron-log)
+  - [`log4js-node`](#log4js-node)
 - [Example integration](#example-integration)
 - [API](#api)
   - [Constructor](#constructor)
@@ -232,6 +233,35 @@ const logger = new LogLayer({
     type: LoggerType.ELECTRON_LOG,
   },
 });
+```
+
+### `log4js-node`
+
+[log4js-node docs](https://log4js-node.github.io/log4js-node/index.html)
+
+- `log4js-node` only works in `node.js` and not the browser
+- By default, `log4js-node` logging is disabled and must be configured via `level` or advanced configuration
+- You may want to use a custom [layout](https://log4js-node.github.io/log4js-node/layouts.html) as `log4js-node` prints only
+string output by default
+- Use [winston](#winston) as an alternative to `log4js-node` if the configuration for `log4js-node` is too complex
+
+```typescript
+import { LogLayer, LoggerType } from 'loglayer'
+import log4js from 'log4js'
+
+const log4jsInstance = log4js.getLogger()
+
+// Enable logging output
+// note: You'll most likely want to use appenders and a custom layout
+// instead to write your logs in log4js-node
+log4jsInstance.level = "trace";
+
+const log = new LogLayer({
+  logger: {
+    instance: log4jsInstance,
+    type: LoggerType.LOG4JS_NODE,
+  },
+})
 ```
 
 ## Example integration

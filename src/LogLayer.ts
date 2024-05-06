@@ -444,6 +444,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       switch (this.loggerType) {
         // Electron log works like winston
         case LoggerType.ELECTRON_LOG:
+        case LoggerType.LOG4JS_NODE:
         case LoggerType.WINSTON:
           // Winston wants the data object to be the last parameter
           params.push(d);
@@ -477,7 +478,8 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         if (consoleDebug) {
           console.debug(...params);
         }
-        // Winston does not have a trace type
+
+        // These loggers do not have a trace type
         if (this.loggerType === LoggerType.WINSTON) {
           this.loggerInstance.debug(...params);
         } else if (this.loggerInstance.trace) {
