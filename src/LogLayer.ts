@@ -1,6 +1,5 @@
 import { LogBuilder } from "./LogBuilder";
 import { PluginManager } from "./plugins/PluginManager";
-import { type LogLayerPlugin, LogLevel, LoggerType } from "./types";
 import type {
   ErrorDataType,
   ErrorOnlyOpts,
@@ -12,6 +11,7 @@ import type {
   LoggerLibrary,
   MessageDataType,
 } from "./types";
+import { type LogLayerPlugin, LogLevel, LoggerType } from "./types";
 
 interface FormatLogParams {
   logLevel: LogLevel;
@@ -453,15 +453,15 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
 
     if (d && hasObjData) {
       switch (this.loggerType) {
-        // Electron log works like winston
         case LoggerType.ELECTRON_LOG:
         case LoggerType.LOG4JS_NODE:
+        case LoggerType.SIGNALE:
         case LoggerType.WINSTON:
-          // Winston wants the data object to be the last parameter
+          // library wants the data object to be the last parameter
           params.push(d);
           break;
         default:
-          // most loggers put object data as the first parameter
+          // put object data as the first parameter
           params.unshift(d);
       }
     }
@@ -491,7 +491,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         }
 
         // These loggers do not have a trace type
-        if (this.loggerType === LoggerType.WINSTON) {
+        if (this.loggerType === LoggerType.WINSTON || this.loggerType === LoggerType.SIGNALE) {
           this.loggerInstance.debug(...params);
         } else if (this.loggerInstance.trace) {
           this.loggerInstance.trace(...params);
