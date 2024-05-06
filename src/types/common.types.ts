@@ -11,16 +11,16 @@ export enum LogLevel {
  * Specifies the type of logging library used.
  */
 export enum LoggerType {
-  OTHER = "other",
-  WINSTON = "winston",
-  ELECTRON_LOG = "electronLog",
-  ROARR = "roarr",
-  PINO = "pino",
   BUNYAN = "bunyan",
-  LOG4JS_NODE = "log4js-node",
-  SIGNALE = "signale",
   CONSOLA = "consola",
   CONSOLE = "console",
+  ELECTRON_LOG = "electronLog",
+  LOG4JS_NODE = "log4js-node",
+  PINO = "pino",
+  ROARR = "roarr",
+  SIGNALE = "signale",
+  WINSTON = "winston",
+  OTHER = "other",
 }
 
 export type MessageDataType = string | number | null | undefined;
