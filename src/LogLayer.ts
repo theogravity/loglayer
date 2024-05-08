@@ -1,17 +1,20 @@
 import { LogBuilder } from "./LogBuilder";
 import { PluginManager } from "./plugins/PluginManager";
-import type {
-  ErrorDataType,
-  ErrorOnlyOpts,
-  ILogLayer,
-  LogLayerConfig,
-  LogLayerContextConfig,
-  LogLayerErrorConfig,
-  LogLayerMetadataConfig,
-  LoggerLibrary,
-  MessageDataType,
+import {
+  type ErrorDataType,
+  type ErrorOnlyOpts,
+  type ILogLayer,
+  type LogLayerConfig,
+  type LogLayerContextConfig,
+  type LogLayerErrorConfig,
+  type LogLayerMetadataConfig,
+  type LogLayerPlugin,
+  LogLevel,
+  type LoggerLibrary,
+  LoggerType,
+  type MessageDataType,
+  PluginCallbackType,
 } from "./types";
-import { type LogLayerPlugin, LogLevel, LoggerType } from "./types";
 
 interface FormatLogParams {
   logLevel: LogLevel;
@@ -432,14 +435,14 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       }
     }
 
-    if (this.pluginManager.hasPlugins()) {
+    if (this.pluginManager.hasPlugins(PluginCallbackType.onBeforeDataOut)) {
       d = this.pluginManager.runOnBeforeDataOut({
         data: hasObjData ? d : undefined,
         logLevel,
       });
     }
 
-    if (this.pluginManager.hasPlugins()) {
+    if (this.pluginManager.hasPlugins(PluginCallbackType.shouldSendToLogger)) {
       const shouldSend = this.pluginManager.runShouldSendToLogger({
         messages: [...params],
         data: hasObjData ? d : undefined,

@@ -70,4 +70,31 @@ export interface LogLayerPlugin {
    * @returns boolean If true, sends data to the logger, if false does not.
    */
   shouldSendToLogger?(params: PluginShouldSendToLoggerParams): boolean;
+  /**
+   * Called when withMetadata() or metadataOnly() is called. This allows you to modify the metadata before it is sent to the destination logging library.
+   *
+   * If null is returned, then no metadata will be sent to the destination logging library.
+   *
+   * @returns [Object] The metadata object to be sent to the destination logging library.
+   */
+  onMetadataCalled?: (metadata: Record<string, any>) => Record<string, any> | null;
+  /**
+   * Called when withError() or errorOnly() is called. This allows you to modify
+   * the error before it is sent to the destination logging library.
+   *
+   * If null is returned, then no error will be sent to the destination logging library.
+   *
+   * @returns The error object to be sent to the destination logging library.
+   */
+  onErrorCalled?: (error: any) => any | null;
+}
+
+/**
+ * List of plugin callbacks that can be called by the plugin manager.
+ */
+export enum PluginCallbackType {
+  onBeforeDataOut = "onBeforeDataOut",
+  shouldSendToLogger = "shouldSendToLogger",
+  onMetadataCalled = "onMetadataCalled",
+  onErrorCalled = "onErrorCalled",
 }
