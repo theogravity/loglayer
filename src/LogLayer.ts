@@ -218,13 +218,29 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
    * Logs only metadata without a log message
    */
   metadataOnly(metadata: Record<string, any>, logLevel: LogLevel = LogLevel.info) {
-    if (this._config.muteMetadata) {
+    const { muteMetadata, consoleDebug } = this._config;
+
+    if (muteMetadata) {
       return;
+    }
+
+    let data: Record<string, any> | null = metadata;
+
+    if (this.pluginManager.hasPlugins(PluginCallbackType.onMetadataCalled)) {
+      data = this.pluginManager.runOnMetadataCalled(metadata);
+
+      if (!data) {
+        if (consoleDebug) {
+          console.debug("[LogLayer] Metadata was dropped due to plugin returning falsy value.");
+        }
+
+        return;
+      }
     }
 
     const config: FormatLogParams = {
       logLevel,
-      data: metadata,
+      data,
     };
 
     if (this.loggerType === LoggerType.ROARR) {

@@ -31,6 +31,7 @@ export interface PluginShouldSendToLoggerParams {
 }
 
 export type PluginShouldSendToLoggerFn = (params: PluginShouldSendToLoggerParams) => boolean;
+export type PluginOnMetadataCalledFn = (metadata: Record<string, any>) => Record<string, any> | null | undefined;
 
 export interface LogLayerPlugin {
   /**
@@ -73,20 +74,15 @@ export interface LogLayerPlugin {
   /**
    * Called when withMetadata() or metadataOnly() is called. This allows you to modify the metadata before it is sent to the destination logging library.
    *
+   * The metadata is a *shallow* clone of the metadata input.
+   *
    * If null is returned, then no metadata will be sent to the destination logging library.
+   *
+   * In multiple plugins, the modified metadata will be passed through each plugin in the order they are added.
    *
    * @returns [Object] The metadata object to be sent to the destination logging library.
    */
-  onMetadataCalled?: (metadata: Record<string, any>) => Record<string, any> | null;
-  /**
-   * Called when withError() or errorOnly() is called. This allows you to modify
-   * the error before it is sent to the destination logging library.
-   *
-   * If null is returned, then no error will be sent to the destination logging library.
-   *
-   * @returns The error object to be sent to the destination logging library.
-   */
-  onErrorCalled?: (error: any) => any | null;
+  onMetadataCalled?: (metadata: Record<string, any>) => Record<string, any> | null | undefined;
 }
 
 /**
@@ -96,5 +92,4 @@ export enum PluginCallbackType {
   onBeforeDataOut = "onBeforeDataOut",
   shouldSendToLogger = "shouldSendToLogger",
   onMetadataCalled = "onMetadataCalled",
-  onErrorCalled = "onErrorCalled",
 }

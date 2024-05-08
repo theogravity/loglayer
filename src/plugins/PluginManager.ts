@@ -6,19 +6,21 @@ import {
 } from "../types";
 
 const CALLBACK_LIST = [
-  PluginCallbackType.onErrorCalled,
   PluginCallbackType.onBeforeDataOut,
   PluginCallbackType.onMetadataCalled,
   PluginCallbackType.shouldSendToLogger,
 ];
 
+interface LogLayerPluginWithTimestamp extends LogLayerPlugin {
+  registeredAt: number;
+}
+
 export class PluginManager<Data extends Record<string, any> = Record<string, any>> {
-  private idToPlugin: Record<string, LogLayerPlugin>;
+  private idToPlugin: Record<string, LogLayerPluginWithTimestamp>;
   // Indexes for each plugin type
   private onBeforeDataOut: Array<string> = [];
   private shouldSendToLogger: Array<string> = [];
   private onMetadataCalled: Array<string> = [];
-  private onErrorCalled: Array<string> = [];
 
   constructor(plugins: Array<LogLayerPlugin>) {
     this.idToPlugin = {};
@@ -32,7 +34,12 @@ export class PluginManager<Data extends Record<string, any> = Record<string, any
         plugin.id = new Date().getTime().toString() + Math.random().toString();
       }
 
-      this.idToPlugin[plugin.id] = plugin;
+      if (this.idToPlugin[plugin.id]) {
+        throw new Error(`[LogLayer] Plugin with id ${plugin.id} already exists.`);
+      }
+
+      plugin["registeredAt"] = new Date().getTime();
+      this.idToPlugin[plugin.id] = plugin as LogLayerPluginWithTimestamp;
     }
   }
 
@@ -40,9 +47,10 @@ export class PluginManager<Data extends Record<string, any> = Record<string, any
     this.onBeforeDataOut = [];
     this.shouldSendToLogger = [];
     this.onMetadataCalled = [];
-    this.onErrorCalled = [];
 
-    for (const plugin of Object.values(this.idToPlugin)) {
+    const pluginList = Object.values(this.idToPlugin).sort((a, b) => a.registeredAt - b.registeredAt);
+
+    for (const plugin of pluginList) {
       if (plugin.disabled) {
         return;
       }
@@ -60,7 +68,11 @@ export class PluginManager<Data extends Record<string, any> = Record<string, any
     return this[callbackType].length > 0;
   }
 
-  countPlugins() {
+  countPlugins(callbackType?: PluginCallbackType) {
+    if (callbackType) {
+      return this[callbackType].length;
+    }
+
     return Object.keys(this.idToPlugin).length;
   }
 
@@ -140,33 +152,15 @@ export class PluginManager<Data extends Record<string, any> = Record<string, any
    * Runs plugins that define onMetadataCalled.
    */
   runOnMetadataCalled(metadata: Record<string, any>): Record<string, any> | null {
-    let data: Record<string, any> = metadata;
+    // Create a shallow copy of metadata to avoid direct modification
+    let data: Record<string, any> = {
+      ...metadata,
+    };
 
     for (const pluginId of this.onMetadataCalled) {
       const plugin = this.idToPlugin[pluginId];
 
       const result = plugin.onMetadataCalled!(data);
-
-      if (result) {
-        data = result;
-      } else {
-        return null;
-      }
-    }
-
-    return data;
-  }
-
-  /**
-   * Runs plugins that define onErrorCalled.
-   */
-  runOnErrorCalled(error: any) {
-    let data: any = null;
-
-    for (const pluginId of this.onErrorCalled) {
-      const plugin = this.idToPlugin[pluginId];
-
-      const result = plugin.onErrorCalled!(data);
 
       if (result) {
         data = result;

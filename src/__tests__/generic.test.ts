@@ -810,4 +810,189 @@ describe("mute / unmute", () => {
       }),
     );
   });
+
+  describe("plugins", () => {
+    describe("shouldSendToLogger", () => {
+      it("should disallow sending to the logger", () => {
+        const log = getLogger();
+        log.addPlugins([
+          {
+            shouldSendToLogger: () => false,
+          },
+        ]);
+
+        const genericLogger = log.getLoggerInstance();
+
+        log.info("Test message");
+
+        expect(genericLogger.lines.length).toBe(0);
+      });
+
+      it("should allow sending to the logger", () => {
+        const log = getLogger();
+        log.addPlugins([
+          {
+            shouldSendToLogger: () => true,
+          },
+        ]);
+
+        const genericLogger = log.getLoggerInstance();
+
+        log.info("Test message");
+
+        expect(genericLogger.lines.length).toBe(1);
+      });
+    });
+
+    describe("onBeforeDataOut", () => {
+      it("should modify the data", () => {
+        const log = getLogger();
+        log.addPlugins([
+          {
+            onBeforeDataOut: ({ data }) => {
+              if (data) {
+                data.modified = true;
+              }
+
+              return data;
+            },
+          },
+        ]);
+
+        const genericLogger = log.getLoggerInstance();
+
+        log
+          .withMetadata({
+            modified: false,
+          })
+          .info("Test message");
+
+        expect(genericLogger.getLine()).toStrictEqual(
+          expect.objectContaining({
+            level: LogLevel.info,
+            data: [
+              {
+                modified: true,
+              },
+              "Test message",
+            ],
+          }),
+        );
+      });
+    });
+
+    describe("onMetadataCalled", () => {
+      describe("withMetadata", () => {
+        it("should modify the metadata", () => {
+          const log = getLogger();
+          log.addPlugins([
+            {
+              onMetadataCalled: (metadata) => {
+                return {
+                  ...metadata,
+                  modified: true,
+                };
+              },
+            },
+          ]);
+
+          const genericLogger = log.getLoggerInstance();
+
+          log
+            .withMetadata({
+              someData: false,
+            })
+            .info("Test message");
+
+          expect(genericLogger.getLine()).toStrictEqual(
+            expect.objectContaining({
+              level: LogLevel.info,
+              data: [
+                {
+                  someData: false,
+                  modified: true,
+                },
+                "Test message",
+              ],
+            }),
+          );
+        });
+
+        it("should drop the metadata", () => {
+          const log = getLogger();
+          log.addPlugins([
+            {
+              onMetadataCalled: () => null,
+            },
+          ]);
+
+          const genericLogger = log.getLoggerInstance();
+
+          log
+            .withMetadata({
+              someData: false,
+            })
+            .info("Test message");
+
+          expect(genericLogger.getLine()).toStrictEqual(
+            expect.objectContaining({
+              level: LogLevel.info,
+              data: ["Test message"],
+            }),
+          );
+        });
+      });
+
+      describe("metadataOnly", () => {
+        it("should modify the metadata", () => {
+          const log = getLogger();
+          log.addPlugins([
+            {
+              onMetadataCalled: (metadata) => {
+                return {
+                  ...metadata,
+                  modified: true,
+                };
+              },
+            },
+          ]);
+
+          const genericLogger = log.getLoggerInstance();
+
+          log.metadataOnly({
+            someData: false,
+          });
+
+          expect(genericLogger.getLine()).toStrictEqual(
+            expect.objectContaining({
+              level: LogLevel.info,
+              data: [
+                {
+                  someData: false,
+                  modified: true,
+                },
+              ],
+            }),
+          );
+        });
+
+        it("should drop the metadata", () => {
+          const log = getLogger();
+          log.addPlugins([
+            {
+              onMetadataCalled: () => null,
+            },
+          ]);
+
+          const genericLogger = log.getLoggerInstance();
+
+          log.metadataOnly({
+            someData: false,
+          });
+
+          expect(genericLogger.getLine()).toBe(undefined);
+        });
+      });
+    });
+  });
 });

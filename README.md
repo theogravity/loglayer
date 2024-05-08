@@ -53,15 +53,15 @@ logLayer
 
 - [Installation](#installation)
 - [Example installations](#example-installations)
+  - [`console`](#console)
+  - [`pino`](#pino)
   - [`bunyan`](#bunyan)
-  - [`consola`](#consola)
-  - [`console`](#console) 
+  - [`winston`](#winston)
+  - [`roarr`](#roarr)
   - [`electron-log`](#electron-log)
   - [`log4js-node`](#log4js-node)
-  - [`pino`](#pino)
-  - [`roarr`](#roarr)
   - [`signale`](#signale)
-  - [`winston`](#winston)
+  - [`consola`](#consola)
 - [Example integration](#example-integration)
 - [API](#api)
   - [Constructor](#constructor)
@@ -97,6 +97,7 @@ logLayer
     - [Callbacks](#callbacks)
       - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
       - [Conditionally send or not send an entry to the logging library](#conditionally-send-or-not-send-an-entry-to-the-logging-library)
+      - [Intercept metadata calls](#intercept-metadata-calls)
 - [Mocking for tests](#mocking-for-tests)
 - [Running tests](#running-tests)
 
@@ -850,6 +851,7 @@ export interface LogLayerPlugin {
   disabled?: boolean;
   onBeforeDataOut?(params: PluginBeforeDataOutParams): Record<string, any> | null | undefined;
   shouldSendToLogger?(params: PluginShouldSendToLoggerParams): boolean;
+  onMetadataCalled?(metadata: Record<string, any>): Record<string, any> | null | undefined;
 }
 ```
 
@@ -903,9 +905,7 @@ export interface PluginBeforeDataOutParams {
 
 `onBeforeDataOut(params: PluginBeforeDataOutParams) => Record<string, any> | null | undefined`
 
-The callback `onBeforeDataOut` can be used to modify the data object
-that contains the context / metadata / error data or create a custom object
-before it is sent out to the logging library.
+The callback `onBeforeDataOut` can be used to modify the data object that contains the context / metadata / error data or create a custom object before it is sent out to the logging library.
 
 Return `null` or `undefined` to not modify the data object.
 
@@ -1005,6 +1005,67 @@ const log = new LogLayer({
 
 // Will not send the log entry to the logger
 log.info('do not send out')
+```
+
+##### Intercept metadata calls
+
+`onMetadataCalled(metadata: Record<string, any>) => Record<string, any> | null | undefined`
+
+The callback `onMetadataCalled` is called when `withMetadata()` or `metadataOnly()` is called with the input being a shallow clone of the metadata from `withMetadata()` / `metadataOnly()`.
+
+One use-case would be for situations where you may want to redact sensitive information from the metadata before it is sent to the logging library and defining the `onBeforeDataOut` plugin callback is too much of a hassle.
+
+- Return the (un)modified metadata object to be sent to the logging library.
+- Return `null` or `undefined` to prevent the metadata from being sent to the logging library.
+- In multiple plugins, the metadata object will be updated with the results of the previous plugin if a result was returned from it.
+  * If in the sequence, one of the `onMetadataCalled` callbacks returns `null` or `undefined`, the metadata object will be omitted from the log entry.
+
+```typescript
+import { 
+  LoggerType, 
+  LogLayer,
+  PluginOnMetadataCalledFn, 
+} from 'loglayer'
+
+const onMetadataCalled: PluginOnMetadataCalledFn = (metadata: Record<string, any>) => {
+  // Modify the metadata object
+  metadata.modified = true
+    
+  return metadata
+}
+
+const log = new LogLayer({
+  ...
+  plugins: [{
+    onMetadataCalled,
+  }]
+})
+
+// Metadata will now include the modified field in the output
+log.withMetadata({ some: 'data' }).info('modified metadata')
+```
+
+```typescript
+import { 
+  LoggerType, 
+  LogLayer,
+  PluginOnMetadataCalledFn, 
+} from 'loglayer'
+
+const onMetadataCalled: PluginOnMetadataCalledFn = (metadata: Record<string, any>) => {
+  // Return null to prevent the metadata from being sent to the logging library
+  return null
+}
+
+const log = new LogLayer({
+  ...
+  plugins: [{
+    onMetadataCalled,
+  }]
+})
+
+// Metadata will be completely omitted from the log print
+log.withMetadata({ some: 'data' }).info('no metadata included')
 ```
 
 ## Mocking for tests

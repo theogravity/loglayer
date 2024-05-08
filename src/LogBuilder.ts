@@ -1,5 +1,12 @@
 import type { LogLayer } from "./LogLayer";
-import type { ErrorDataType, ILogBuilder, LoggerLibrary, MessageDataType } from "./types";
+import type { PluginManager } from "./plugins/PluginManager";
+import {
+  type ErrorDataType,
+  type ILogBuilder,
+  type LoggerLibrary,
+  type MessageDataType,
+  PluginCallbackType,
+} from "./types";
 import { LogLevel } from "./types";
 
 /**
@@ -13,21 +20,44 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
   private metadata: Record<string, any>;
   private structuredLogger: LogLayer<ExternalLogger, ErrorType>;
   private hasMetadata: boolean;
+  private pluginManager: PluginManager;
 
   constructor(structuredLogger: LogLayer<ExternalLogger, ErrorType>) {
     this.err = null;
     this.metadata = {};
     this.structuredLogger = structuredLogger;
     this.hasMetadata = false;
+    this.pluginManager = structuredLogger["pluginManager"];
   }
 
   /**
    * Adds metadata to the current log entry
    */
   withMetadata(metadata: Record<string, any>) {
+    const {
+      pluginManager,
+      structuredLogger: {
+        _config: { consoleDebug },
+      },
+    } = this;
+
+    let data: Record<string, any> | null = metadata;
+
+    if (pluginManager.hasPlugins(PluginCallbackType.onMetadataCalled)) {
+      data = pluginManager.runOnMetadataCalled(metadata);
+
+      if (!data) {
+        if (consoleDebug) {
+          console.debug("[LogLayer] Metadata was dropped due to plugin returning falsy value.");
+        }
+
+        return this;
+      }
+    }
+
     this.metadata = {
       ...this.metadata,
-      ...metadata,
+      ...data,
     };
 
     this.hasMetadata = true;
