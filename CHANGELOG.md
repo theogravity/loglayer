@@ -1,5 +1,17 @@
 # loglayer
 
+## 4.3.0
+
+### Minor Changes
+
+- [`74756da`](https://github.com/theogravity/loglayer/commit/74756da219c8efaf06636c09255d613080df68e6) Thanks [@theogravity](https://github.com/theogravity)! - Add `onMetadataCalled()` plugin callback to hook into `withMetadata()` and `metadataOnly()` calls.
+
+  See the README section on `intercept metadata calls` for usage details.
+
+### Patch Changes
+
+- [#27](https://github.com/theogravity/loglayer/pull/27) [`a6fb176`](https://github.com/theogravity/loglayer/commit/a6fb1768b9ac28900a09f4097aac47c4465ec7b9) Thanks [@theogravity](https://github.com/theogravity)! - Refactor `PluginManager` for performance improvements.
+
 ## 4.2.1
 
 ### Patch Changes
