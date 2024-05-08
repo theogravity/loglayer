@@ -3,6 +3,7 @@ import {
   type LogLayerPlugin,
   LogLevel,
   type PluginBeforeDataOutParams,
+  PluginCallbackType,
   type PluginShouldSendToLoggerParams,
 } from "../../types";
 import { PluginManager } from "../PluginManager";
@@ -28,7 +29,8 @@ describe("PluginManager", () => {
   });
 
   it("should initialize with passed plugins", () => {
-    expect(pluginManager.hasPlugins()).toBe(true);
+    expect(pluginManager.hasPlugins(PluginCallbackType.onBeforeDataOut)).toBe(true);
+    expect(pluginManager.hasPlugins(PluginCallbackType.shouldSendToLogger)).toBe(true);
   });
 
   it("adds plugins to the list", () => {
@@ -38,8 +40,10 @@ describe("PluginManager", () => {
     };
     pluginManager.addPlugins([newPlugin]);
 
-    expect(pluginManager.hasPlugins()).toBe(true);
-    expect(pluginManager["plugins"].length).toBe(3);
+    expect(pluginManager.hasPlugins(PluginCallbackType.onBeforeDataOut)).toBe(true);
+    expect(pluginManager.hasPlugins(PluginCallbackType.shouldSendToLogger)).toBe(true);
+    expect(pluginManager["onBeforeDataOut"].length).toBe(3);
+    expect(pluginManager["shouldSendToLogger"].length).toBe(3);
   });
 
   it("runs onBeforeDataOut and modifies data correctly", () => {
@@ -76,26 +80,6 @@ describe("PluginManager", () => {
     expect(plugins[1].shouldSendToLogger).toHaveBeenCalledTimes(1);
   });
 
-  it("runs shouldSendToLogger and returns true if not defined", () => {
-    const params: PluginShouldSendToLoggerParams = {
-      logLevel: LogLevel.error,
-      messages: ["Test message"],
-      data: { key: "value" },
-    };
-
-    // 0th plugin returns true
-    plugins[1].shouldSendToLogger = undefined;
-
-    const shouldSend = pluginManager.runShouldSendToLogger(params);
-    expect(shouldSend).toBe(true);
-
-    plugins[0].shouldSendToLogger = undefined;
-    plugins[1].shouldSendToLogger = undefined;
-
-    const shouldSend2 = pluginManager.runShouldSendToLogger(params);
-    expect(shouldSend2).toBe(true);
-  });
-
   it("disables a plugin", () => {
     pluginManager.disablePlugin(plugins[0].id!);
     expect(plugins[0].disabled).toBe(true);
@@ -109,7 +93,6 @@ describe("PluginManager", () => {
 
   it("removes a plugin", () => {
     pluginManager.removePlugin(plugins[0].id!);
-    expect(pluginManager.hasPlugins()).toBe(true);
-    expect(pluginManager["plugins"].length).toBe(1);
+    expect(pluginManager.countPlugins()).toBe(1);
   });
 });
