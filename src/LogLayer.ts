@@ -174,9 +174,11 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
           instance: this.loggerInstance,
           type: this.loggerType,
         },
-      }).withContext({
-        ...this.context,
-      });
+      })
+        .withContext({
+          ...this.context,
+        })
+        .withPluginManager(this.pluginManager);
     }
 
     return new LogLayer<ExternalLogger, ErrorType>({
@@ -185,7 +187,12 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         instance: this.loggerInstance,
         type: this.loggerType,
       },
-    });
+    }).withPluginManager(this.pluginManager);
+  }
+
+  protected withPluginManager(pluginManager: PluginManager) {
+    this.pluginManager = pluginManager;
+    return this;
   }
 
   /**
