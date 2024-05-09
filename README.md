@@ -4,39 +4,41 @@
 ![NPM Downloads](https://img.shields.io/npm/dm/loglayer)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 
-Standardize the way you write logs with the `loglayer` abstraction using your existing logging library 
-(`bunyan` / `winston` / `pino` / `roarr` / `log4js-node` / `electron-log` / `signale` / `consola` / etc).
+`loglayer` standardizes log entry definitions, context handling, metadata, and error reporting, streamlining your logging process using your logging library of choice like `pino` / `winston` / `bunyan` / etc.
 
-Spend less time from having to *define* your logs and spend more writing them.
+Enjoy the simplicity of seamlessly switching between different logging libraries without needing to overhaul your entire codebase, and focus on writing effective logs instead of configuring them:
 
-- Switch between different logging libraries if you do not like the one you use without changing your entire codebase.
-  * Starting off with `console` and want to switch to `bunyan` later? You can with little effort!
-- Intuitive API with no dependencies.
-- Written in typescript.
-- Installation instructions for each logging library.
-- Unit tested with various logging libraries.
+- Easily swap from `console` (or another logging library) to another logging library with minimal effort.
+  * Supports `bunyan`, `winston`, `pino`, `roarr`, `log4js-node`, `electron-log`, `signale`, `consola`, and more with installation examples for each.
+- Offers an intuitive, dependency-free API developed in TypeScript.
+- Has ready-to-use mocks for your unit tests.
+- Unit tested against multiple logging libraries to ensure compatibility.
 
-Without `loglayer`, how does one define a log entry?
+### Before `loglayer`
+
+Defining a log entry can vary significantly between different libraries:
 
 ```javascript
-// is it like this?
+// Using `winston`:
 winston.info('my message', { some: 'data' })
 
-// or like this?
+// Using `bunyan`:
 bunyan.info({ some: 'data' }, 'my message')
 ```
 
-How does one work with errors?
+Handling errors can also be inconsistent:
 
 ```javascript
-// is it like this? Is err the field for errors?
+// Using `roarr` with a direct error object:
 roarr.error({ err: new Error('test') })
 
-// Do I need to serialize it first? 
+// With serialized error data:
 roarr.error({ err: serialize(new Error('test')) })
 ```
 
-With `loglayer`, stop worrying about details, and *write* logs!
+### Simplicity with `loglayer`
+
+Focus on creating logs with clear, consistent syntax:
 
 ```javascript
 logLayer
@@ -44,8 +46,6 @@ logLayer
   .withError(new Error('test'))
   .info('my message')
 ```
-
-`loglayer` is a wrapper around logging libraries to provide a consistent way to specify context, metadata, and errors.
 
 # Table of Contents
 
