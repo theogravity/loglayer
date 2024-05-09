@@ -1,5 +1,16 @@
 # loglayer
 
+## 4.3.1
+
+### Patch Changes
+
+- [#29](https://github.com/theogravity/loglayer/pull/29) [`0d5a9c7`](https://github.com/theogravity/loglayer/commit/0d5a9c77fd4ed02314285f69d6ab07affb1bbd15) Thanks [@theogravity](https://github.com/theogravity)! - Fixes child logger not inheriting plugins.
+
+  Before plugins, hooks were copied to the child logger, so this fix makes the behavior consistent with prior behavior.
+
+  The README for child loggers has been updated
+  to include that plugins are now inherited.
+
 ## 4.3.0
 
 ### Minor Changes
