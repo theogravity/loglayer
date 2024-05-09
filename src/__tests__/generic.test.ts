@@ -812,6 +812,21 @@ describe("mute / unmute", () => {
   });
 
   describe("plugins", () => {
+    it("should copy the plugin manager to a child logger", () => {
+      const log = getLogger();
+      log.addPlugins([
+        {
+          shouldSendToLogger: () => false,
+        },
+      ]);
+
+      const genericLogger = log.getLoggerInstance();
+
+      const child = log.child();
+
+      expect(child["pluginManager"].countPlugins()).toBe(1);
+    });
+
     describe("shouldSendToLogger", () => {
       it("should disallow sending to the logger", () => {
         const log = getLogger();
