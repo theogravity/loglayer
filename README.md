@@ -4,13 +4,12 @@
 ![NPM Downloads](https://img.shields.io/npm/dm/loglayer)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 
-`loglayer` standardizes log entry definitions, context handling, metadata, and error reporting, streamlining your logging process using your logging library of choice like `pino` / `winston` / `bunyan` / etc.
+`loglayer` standardizes log entry definitions, contextual data, metadata, and error reporting, streamlining your logging process using your logging library of choice like `pino` / `winston` / `bunyan` / etc.
 
-Enjoy the simplicity of seamlessly switching between different logging libraries without needing to overhaul your entire codebase, and focus on writing effective logs instead of configuring them:
-
-- Easily swap from `console` (or another logging library) to another logging library with minimal effort.
+- Zero dependency library.
+- Fluent API for creating log entries with Typescript support.
+- Not sure what logging package to use? Start with `console` as the underlying logger (or another logging library) and swap later to another logging library without needing to overhaul your entire codebase.
   * Supports `bunyan`, `winston`, `pino`, `roarr`, `log4js-node`, `electron-log`, `signale`, `consola`, and more with installation examples for each.
-- Offers an intuitive, dependency-free API developed in TypeScript.
 - Has ready-to-use mocks for your unit tests.
 - Unit tested against multiple logging libraries to ensure compatibility.
 
