@@ -1,5 +1,13 @@
 # loglayer
 
+## 4.3.3
+
+### Patch Changes
+
+- [`a824b32`](https://github.com/theogravity/loglayer/commit/a824b32e5d0b6c3055752efe69f0b4ed01c0f694) Thanks [@theogravity](https://github.com/theogravity)! - Update README copy
+
+  Updates the README intro to sound less... odd.
+
 ## 4.3.2
 
 ### Patch Changes
