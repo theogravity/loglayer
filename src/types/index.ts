@@ -67,7 +67,7 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
   /**
    * Calls child() and sets the prefix to be included with every log message.
    */
-  withPrefix(string: string): ILogBuilder;
+  withPrefix(string: string): ILogLayer<ExternalLogger, ErrorType>;
   /**
    * Appends context data which will be included with
    * every log entry.
@@ -106,7 +106,7 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
    *
    * The copied context data is a *shallow copy*.
    */
-  child(): ILogBuilder;
+  child(): ILogLayer<ExternalLogger, ErrorType>;
 
   /**
    * Disables inclusion of context data in the print

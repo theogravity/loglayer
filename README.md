@@ -589,7 +589,7 @@ The same log commands would now be formatted as:
 
 ### Child logger
 
-`LogLayer#child()`
+`LogLayer#child(): LogLayer`
 
 You can create a child logger, which will copy the configuration you used for creating the parent, along with the existing context data and plugins.
 
