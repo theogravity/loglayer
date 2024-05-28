@@ -3,7 +3,7 @@
 
 import { MockLogBuilder } from "./MockLogBuilder";
 import type { ErrorOnlyOpts, ILogBuilder, ILogLayer, LogLayerPlugin } from "./types";
-import type { LogLevel, MessageDataType } from "./types/common.types";
+import type { LogLevel, MessageDataType } from "./types";
 
 export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType> {
   info(...messages: MessageDataType[]): void {}
@@ -28,11 +28,11 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
   disablePlugin(id: string) {}
 
   withPrefix(prefix: string) {
-    return new MockLogLayer();
+    return new MockLogLayer() as ILogLayer<any, ErrorType>;
   }
 
   withContext(context: Record<string, any>): ILogLayer<any, ErrorType> {
-    return this;
+    return this as ILogLayer<any, ErrorType>;
   }
 
   withError(error: ErrorType): ILogBuilder {
@@ -56,7 +56,7 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
   }
 
   child() {
-    return new MockLogLayer();
+    return new MockLogLayer() as ILogLayer<any, ErrorType>;
   }
 
   muteContext() {
