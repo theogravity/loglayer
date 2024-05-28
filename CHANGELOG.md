@@ -1,5 +1,15 @@
 # loglayer
 
+## 4.4.0
+
+### Minor Changes
+
+- [#33](https://github.com/theogravity/loglayer/pull/33) [`1d67e1f`](https://github.com/theogravity/loglayer/commit/1d67e1f23a013d7ef131419ded26a0e7ca7e766e) Thanks [@theogravity](https://github.com/theogravity)! - Fix ILogLayer return types
+
+  `ILogLayer#withPrefix()` and `ILogLayer#withChild()` were of the incorrect return type.
+
+  Changed to `ILogLayer<ExternalLogger, ErrorType>`.
+
 ## 4.3.3
 
 ### Patch Changes
