@@ -615,6 +615,7 @@ const childLog = parentLog.child()
 - `LogLayer#debug(...messages: MessageDataType[]): void`
 - `LogLayer#trace(...messages: MessageDataType[]): void`
 - `LogLayer#fatal(...messages: MessageDataType[]): void`
+- `LogLayer#silent(...messages: MessageDataType[]): void`
 
 `type MessageDataType = string | number | null | undefined`
 
@@ -623,6 +624,7 @@ to the following levels in that situation:
 
   * `trace` -> `debug`
   * `fatal` -> `error`
+  * `silent` -> (no-op)
 
 *Your logging library may or may not support passing multiple parameters. See your logging library's 
 documentation for more details.*

@@ -140,6 +140,14 @@ export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, Er
   }
 
   /**
+   * No-op method that does nothing.
+   */
+  silent(...messages: MessageDataType[]) {
+    this.structuredLogger._formatMessage(messages);
+    this.formatLog(LogLevel.silent, messages);
+  }
+
+  /**
    * All logging inputs are dropped and stops sending logs to the logging library.
    */
   disableLogging() {

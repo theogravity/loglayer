@@ -12,6 +12,7 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
   debug(...messages: MessageDataType[]): void {}
   trace(...messages: MessageDataType[]): void {}
   fatal(...messages: MessageDataType[]): void {}
+  silent(...messages: MessageDataType[]): void {}
 
   getLoggerInstance() {}
 

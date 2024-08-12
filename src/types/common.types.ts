@@ -5,6 +5,7 @@ export enum LogLevel {
   debug = "debug",
   trace = "trace",
   fatal = "fatal",
+  silent = "silent",
 }
 
 /**

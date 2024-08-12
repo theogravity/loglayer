@@ -325,6 +325,14 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
   }
 
   /**
+   * No-op method that does nothing.
+   */
+  silent(...messages: MessageDataType[]) {
+    this._formatMessage(messages);
+    this._formatLog({ logLevel: LogLevel.silent, params: messages });
+  }
+
+  /**
    * All logging inputs are dropped and stops sending logs to the logging library.
    */
   disableLogging() {
@@ -547,6 +555,11 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
           this.loggerInstance.fatal(...params);
         } else {
           this.loggerInstance.error(...params);
+        }
+        break;
+      case LogLevel.silent:
+        if (this.loggerInstance.silent) {
+          this.loggerInstance.silent(...params);
         }
         break;
       default:

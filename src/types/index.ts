@@ -15,6 +15,7 @@ export interface LoggerLibrary {
   trace?: (...data: any[]) => void;
   debug(...data: any[]): void;
   fatal?: (...data: any[]) => void;
+  silent?: (...data: any[]) => void;
 }
 
 export interface ILogBuilder {
@@ -60,6 +61,11 @@ export interface ILogBuilder {
    * the first parameter would be used.
    */
   fatal(...messages: MessageDataType[]): void;
+
+  /**
+   * No-op method that does nothing.
+   */
+  silent(): void;
 }
 
 export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, ErrorType = ErrorDataType>
