@@ -124,6 +124,14 @@ export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary,
    * Enables inclusion of metadata data in the print
    */
   unMuteMetadata(): ILogLayer<ExternalLogger, ErrorType>;
+  /**
+   * Enable sending logs to the logging library.
+   */
+  enableLogging(): ILogLayer<ExternalLogger, ErrorType>;
+  /**
+   * All logging inputs are dropped and stops sending logs to the logging library.
+   */
+  disableLogging(): ILogLayer<ExternalLogger, ErrorType>;
 }
 
 export type ErrorSerializerType<ErrorType> = (err: ErrorType) => Record<string, any> | string;
