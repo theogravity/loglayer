@@ -1,6 +1,6 @@
 {
   "name": "loglayer",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "Standardizes logging across multiple logging libraries, providing a consistent way to specify context, metadata, and errors.",
   "files": [
     "dist"

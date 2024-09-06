@@ -1,5 +1,11 @@
 # loglayer
 
+## 4.4.1
+
+### Patch Changes
+
+- [#36](https://github.com/theogravity/loglayer/pull/36) [`40bb3b5`](https://github.com/theogravity/loglayer/commit/40bb3b55a2a442229dbe542a0495b29b406d5a1a) Thanks [@theogravity](https://github.com/theogravity)! - Add enable/disableLogger to ILogLayer
+
 ## 4.4.0
 
 ### Minor Changes
