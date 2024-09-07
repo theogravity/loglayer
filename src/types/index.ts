@@ -17,7 +17,7 @@ export interface LoggerLibrary {
   fatal?: (...data: any[]) => void;
 }
 
-export interface ILogBuilder {
+export interface ILogBuilder<ErrorType = ErrorDataType> {
   /**
    * Sends a log message to the logging library under an info log level.
    *
@@ -60,6 +60,22 @@ export interface ILogBuilder {
    * the first parameter would be used.
    */
   fatal(...messages: MessageDataType[]): void;
+  /**
+   * Specifies metadata to include with the log message
+   */
+  withMetadata(metadata: Record<string, any>): ILogBuilder<ErrorType>;
+  /**
+   * Specifies an Error to include with the log message
+   */
+  withError(error: ErrorType): ILogBuilder<ErrorType>;
+  /**
+   * Enable sending logs to the logging library.
+   */
+  enableLogging(): ILogBuilder<ErrorType>;
+  /**
+   * All logging inputs are dropped and stops sending logs to the logging library.
+   */
+  disableLogging(): ILogBuilder<ErrorType>;
 }
 
 export interface ILogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, ErrorType = ErrorDataType>
