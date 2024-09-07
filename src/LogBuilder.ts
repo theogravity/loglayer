@@ -14,7 +14,7 @@ import { LogLevel } from "./types";
  * it together to form a data object that can be passed into the logger.
  */
 export class LogBuilder<ExternalLogger extends LoggerLibrary = LoggerLibrary, ErrorType extends Error = ErrorDataType>
-  implements ILogBuilder
+  implements ILogBuilder<ErrorType>
 {
   private err: ErrorType | null;
   private metadata: Record<string, any>;

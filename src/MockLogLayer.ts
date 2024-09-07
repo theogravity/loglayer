@@ -35,11 +35,11 @@ export class MockLogLayer<ErrorType = Error> implements ILogLayer<any, ErrorType
     return this as ILogLayer<any, ErrorType>;
   }
 
-  withError(error: ErrorType): ILogBuilder {
+  withError(error: ErrorType): ILogBuilder<ErrorType> {
     return new MockLogBuilder();
   }
 
-  withMetadata(metadata: Record<string, any>): ILogBuilder {
+  withMetadata(metadata: Record<string, any>): ILogBuilder<ErrorType> {
     return new MockLogBuilder();
   }
 
