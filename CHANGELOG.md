@@ -1,5 +1,12 @@
 # loglayer
 
+## 4.5.0
+
+### Minor Changes
+
+- [#38](https://github.com/theogravity/loglayer/pull/38) [`afdfbdd`](https://github.com/theogravity/loglayer/commit/afdfbdd7fe32e8d2023be9598071266e34a69cac) Thanks [@theogravity](https://github.com/theogravity)! - - Add `withError` / `withMetadata` / `enableLogging` / `disableLogging` to `ILogBuilder`.
+  - `ILogBuilder` now has `<ErrorType = ErrorDataType>`.
+
 ## 4.4.1
 
 ### Patch Changes
