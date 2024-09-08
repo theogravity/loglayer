@@ -31,6 +31,20 @@ export interface PluginShouldSendToLoggerParams {
 }
 
 export type PluginShouldSendToLoggerFn = (params: PluginShouldSendToLoggerParams) => boolean;
+
+export interface PluginBeforeMessageOutParams {
+  /**
+   * Log level of the message
+   */
+  logLevel: LogLevel;
+  /**
+   * Message data that is copied from the original.
+   */
+  messages: MessageDataType[];
+}
+
+export type PluginBeforeMessageOutFn = (params: PluginBeforeMessageOutParams) => MessageDataType[];
+
 export type PluginOnMetadataCalledFn = (metadata: Record<string, any>) => Record<string, any> | null | undefined;
 
 export interface LogLayerPlugin {
@@ -58,6 +72,14 @@ export interface LogLayerPlugin {
    * library or null / undefined to not pass an object through.
    */
   onBeforeDataOut?(params: PluginBeforeDataOutParams): Record<string, any> | null | undefined;
+
+  /**
+   * Called after `onBeforeDataOut` and before `shouldSendToLogger`.
+   * This allows you to modify the message data before it is sent to the destination logging library.
+   *
+   * @returns [Array] The message data to be sent to the destination logging library.
+   */
+  onBeforeMessageOut?(params: PluginBeforeMessageOutParams): MessageDataType[] | null | undefined;
 
   /**
    * Called before the data is sent to the logger. Return false to omit sending
@@ -92,4 +114,5 @@ export enum PluginCallbackType {
   onBeforeDataOut = "onBeforeDataOut",
   shouldSendToLogger = "shouldSendToLogger",
   onMetadataCalled = "onMetadataCalled",
+  onBeforeMessageOut = "onBeforeMessageOut",
 }

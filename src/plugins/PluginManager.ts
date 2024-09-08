@@ -1,6 +1,8 @@
 import {
   type LogLayerPlugin,
+  type MessageDataType,
   type PluginBeforeDataOutParams,
+  type PluginBeforeMessageOutParams,
   PluginCallbackType,
   type PluginShouldSendToLoggerParams,
 } from "../types";
@@ -9,6 +11,7 @@ const CALLBACK_LIST = [
   PluginCallbackType.onBeforeDataOut,
   PluginCallbackType.onMetadataCalled,
   PluginCallbackType.shouldSendToLogger,
+  PluginCallbackType.onBeforeMessageOut,
 ];
 
 interface LogLayerPluginWithTimestamp extends LogLayerPlugin {
@@ -21,6 +24,7 @@ export class PluginManager<Data extends Record<string, any> = Record<string, any
   private onBeforeDataOut: Array<string> = [];
   private shouldSendToLogger: Array<string> = [];
   private onMetadataCalled: Array<string> = [];
+  private onBeforeMessageOut: Array<string> = [];
 
   constructor(plugins: Array<LogLayerPlugin>) {
     this.idToPlugin = {};
@@ -47,6 +51,7 @@ export class PluginManager<Data extends Record<string, any> = Record<string, any
     this.onBeforeDataOut = [];
     this.shouldSendToLogger = [];
     this.onMetadataCalled = [];
+    this.onBeforeMessageOut = [];
 
     const pluginList = Object.values(this.idToPlugin).sort((a, b) => a.registeredAt - b.registeredAt);
 
@@ -170,5 +175,24 @@ export class PluginManager<Data extends Record<string, any> = Record<string, any
     }
 
     return data;
+  }
+
+  runOnBeforeMessageOut(params: PluginBeforeMessageOutParams): MessageDataType[] {
+    let messages = [...params.messages];
+
+    for (const pluginId of this.onBeforeMessageOut) {
+      const plugin = this.idToPlugin[pluginId];
+
+      const result = plugin.onBeforeMessageOut!({
+        messages: messages,
+        logLevel: params.logLevel,
+      });
+
+      if (result) {
+        messages = result;
+      }
+    }
+
+    return messages;
   }
 }

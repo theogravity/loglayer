@@ -896,6 +896,30 @@ describe("mute / unmute", () => {
       });
     });
 
+    describe("onBeforeMessageOut", () => {
+      it("should modify the message", () => {
+        const log = getLogger();
+        log.addPlugins([
+          {
+            onBeforeMessageOut: ({ messages }) => {
+              return ["Modified message"];
+            },
+          },
+        ]);
+
+        const genericLogger = log.getLoggerInstance();
+
+        log.info("Test message");
+
+        expect(genericLogger.getLine()).toStrictEqual(
+          expect.objectContaining({
+            level: LogLevel.info,
+            data: ["Modified message"],
+          }),
+        );
+      });
+    });
+
     describe("onMetadataCalled", () => {
       describe("withMetadata", () => {
         it("should modify the metadata", () => {

@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi, vitest } from "vitest";
 import {
   type LogLayerPlugin,
   LogLevel,
+  MessageDataType,
   type PluginBeforeDataOutParams,
+  type PluginBeforeMessageOutParams,
   PluginCallbackType,
   type PluginShouldSendToLoggerParams,
 } from "../../types";
@@ -86,6 +88,26 @@ describe("PluginManager", () => {
     expect(result).toEqual({ initial: "data", added: "test", modified: "yes" });
     expect(plugins[0].onBeforeDataOut).toHaveBeenCalledOnce();
     expect(plugins[1].onBeforeDataOut).toHaveBeenCalledOnce();
+  });
+
+  it("runs onBeforeMessageOut and properly respects plugin responses", () => {
+    pluginManager.addPlugins([
+      {
+        id: "message-1",
+        onBeforeMessageOut: ({ messages }) => {
+          return [messages[0], "Modified message"];
+        },
+      },
+    ]);
+
+    const initialParams: PluginBeforeMessageOutParams = {
+      logLevel: LogLevel.error,
+      messages: ["Test message"],
+    };
+
+    const result = pluginManager.runOnBeforeMessageOut(initialParams);
+
+    expect(result).toEqual(["Test message", "Modified message"]);
   });
 
   it("runs shouldSendToLogger and properly respects plugin responses", () => {

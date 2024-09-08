@@ -95,6 +95,7 @@ logLayer
       - [Remove a plugin](#remove-a-plugin)
     - [Callbacks](#callbacks)
       - [Modify / create object data before being sent to the logging library](#modify--create-object-data-before-being-sent-to-the-logging-library)
+      - [Modify / create message data before being sent to the logging library](#modify--create-message-data-before-being-sent-to-the-logging-library)
       - [Conditionally send or not send an entry to the logging library](#conditionally-send-or-not-send-an-entry-to-the-logging-library)
       - [Intercept metadata calls](#intercept-metadata-calls)
 - [Mocking for tests](#mocking-for-tests)
@@ -940,6 +941,60 @@ log.withContext({ test: 'data' }).info('this is a test message')
   "test": "data",
   "modified": true,
   "msg": "this is a test message"
+}
+```
+
+##### Modify / create message data before being sent to the logging library
+
+```typescript
+export interface PluginBeforeMessageOutParams {
+  /**
+   * Log level of the message
+   */
+  logLevel: LogLevel;
+  /**
+   * Message data that is copied from the original.
+   */
+  messages: MessageDataType[];
+}
+```
+
+`onBeforeMessageOut(params: PluginOnBeforeMessageOutParams) => MessageDataType[]`
+
+Called after `onBeforeDataOut` and before `shouldSendToLogger`.
+This allows you to modify the message data before it is sent to the destination logging library.
+
+*Parameters*
+
+- `messages`: The parameters sent via `info()`, `warn()`, `error()`, `debug()`, etc. Most will use `messages[0]`. This data is copied from the original.
+- `logLevel`: The log level of the message.
+
+```typescript
+import { 
+  LoggerType, 
+  LogLayer,
+  PluginBeforeMessageOutParams,
+  PluginBeforeMessageOutFn,
+} from 'loglayer'
+
+const onBeforeMessageOut: PluginBeforeMessageOutFn = (params: PluginBeforeMessageOutParams) => {
+  return [params.messages[0], 'modified message']
+}
+
+const log = new LogLayer({
+  ...
+  plugins: [{
+    onBeforeMessageOut,
+  }]
+})
+
+// Assuming your logging library supports multiple parameters and will interpret the %s
+log.info('this is a test message: %s')
+```
+
+```json
+{
+  "msg": "this is a test message: modified message"
 }
 ```
 
