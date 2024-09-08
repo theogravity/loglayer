@@ -1,5 +1,11 @@
 # loglayer
 
+## 4.6.1
+
+### Patch Changes
+
+- [`09991a3`](https://github.com/theogravity/loglayer/commit/09991a39ea1f6be7e4db812d252a54a90063491f) Thanks [@theogravity](https://github.com/theogravity)! - Update docs
+
 ## 4.6.0
 
 ### Minor Changes
