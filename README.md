@@ -957,11 +957,11 @@ export interface PluginBeforeMessageOutParams {
   /**
    * Message data that is copied from the original.
    */
-  messages: MessageDataType[];
+  messages: any[];
 }
 ```
 
-`onBeforeMessageOut(params: PluginOnBeforeMessageOutParams) => MessageDataType[]`
+`onBeforeMessageOut(params: PluginOnBeforeMessageOutParams) => any[]`
 
 Called after `onBeforeDataOut` and before `shouldSendToLogger`.
 This allows you to modify the message data before it is sent to the destination logging library.
@@ -1007,7 +1007,7 @@ export interface PluginShouldSendToLoggerParams {
   /**
    * Message data that is copied from the original.
    */
-  messages: MessageDataType[];
+  messages: any[];
   /**
    * Log level of the message
    */

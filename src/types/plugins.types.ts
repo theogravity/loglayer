@@ -18,7 +18,7 @@ export interface PluginShouldSendToLoggerParams {
   /**
    * Message data that is copied from the original.
    */
-  messages: MessageDataType[];
+  messages: any[];
   /**
    * Log level of the message
    */
@@ -40,10 +40,10 @@ export interface PluginBeforeMessageOutParams {
   /**
    * Message data that is copied from the original.
    */
-  messages: MessageDataType[];
+  messages: any[];
 }
 
-export type PluginBeforeMessageOutFn = (params: PluginBeforeMessageOutParams) => MessageDataType[];
+export type PluginBeforeMessageOutFn = (params: PluginBeforeMessageOutParams) => any[];
 
 export type PluginOnMetadataCalledFn = (metadata: Record<string, any>) => Record<string, any> | null | undefined;
 
@@ -79,7 +79,7 @@ export interface LogLayerPlugin {
    *
    * @returns [Array] The message data to be sent to the destination logging library.
    */
-  onBeforeMessageOut?(params: PluginBeforeMessageOutParams): MessageDataType[] | null | undefined;
+  onBeforeMessageOut?(params: PluginBeforeMessageOutParams): any[];
 
   /**
    * Called before the data is sent to the logger. Return false to omit sending
