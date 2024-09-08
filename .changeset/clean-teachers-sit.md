@@ -1,5 +1,0 @@
----
-"loglayer": patch
----
-
-Update docs
