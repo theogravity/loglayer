@@ -1,5 +1,12 @@
 # loglayer
 
+## 4.7.0
+
+### Minor Changes
+
+- [`14f4ce1`](https://github.com/theogravity/loglayer/commit/14f4ce16994e45870b743df18782f1f6e63bce45) Thanks [@theogravity](https://github.com/theogravity)! - Change messages property of ShouldSendToLoggerParams and PluginBeforeMessageOutParams to `any` from `MessageDataType`.
+  This allows for more flexibility in the messages property of these params since external libraries may feed in different types of data.
+
 ## 4.6.1
 
 ### Patch Changes
