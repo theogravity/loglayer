@@ -1,5 +1,11 @@
 # loglayer
 
+## 4.6.0
+
+### Minor Changes
+
+- [#40](https://github.com/theogravity/loglayer/pull/40) [`25212bd`](https://github.com/theogravity/loglayer/commit/25212bde2c3490e7cadd2b43950e37f7c294af13) Thanks [@theogravity](https://github.com/theogravity)! - Add `onBeforeMessageOut` callback to plugins
+
 ## 4.5.0
 
 ### Minor Changes
