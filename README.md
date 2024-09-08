@@ -849,6 +849,7 @@ export interface LogLayerPlugin {
    */
   disabled?: boolean;
   onBeforeDataOut?(params: PluginBeforeDataOutParams): Record<string, any> | null | undefined;
+  onBeforeMessageOut?(params: PluginBeforeMessageOutParams): MessageDataType[];
   shouldSendToLogger?(params: PluginShouldSendToLoggerParams): boolean;
   onMetadataCalled?(metadata: Record<string, any>): Record<string, any> | null | undefined;
 }
@@ -861,7 +862,8 @@ Plugins are executed in the order they are defined.
 The event lifecycle is as follows:
 
 1. `onBeforeDataOut` is called to modify the data object before it is sent to the logging library.
-2. `shouldSendToLogger` is called to determine if the log entry should be sent to the logging library.
+2. `onBeforeMessageOut` is called to modify the message data before it is sent to the logging library.
+3. `shouldSendToLogger` is called to determine if the log entry should be sent to the logging library.
 
 #### Management
 
