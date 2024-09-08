@@ -465,6 +465,13 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
       });
     }
 
+    if (this.pluginManager.hasPlugins(PluginCallbackType.onBeforeMessageOut)) {
+      params = this.pluginManager.runOnBeforeMessageOut({
+        messages: [...params],
+        logLevel,
+      });
+    }
+
     if (this.pluginManager.hasPlugins(PluginCallbackType.shouldSendToLogger)) {
       const shouldSend = this.pluginManager.runShouldSendToLogger({
         messages: [...params],
