@@ -1,5 +1,11 @@
 # loglayer
 
+## 4.8.0
+
+### Minor Changes
+
+- [`7033d6e`](https://github.com/theogravity/loglayer/commit/7033d6e18c398728ae6e0cf21524948b47d21e5f) Thanks [@theogravity](https://github.com/theogravity)! - Add support for @datadog/browser-logs
+
 ## 4.7.0
 
 ### Minor Changes
