@@ -21,6 +21,7 @@ export enum LoggerType {
   SIGNALE = "signale",
   WINSTON = "winston",
   OTHER = "other",
+  DATADOG_BROWSER_LOGS = "datadog-browser",
 }
 
 export type MessageDataType = string | number | null | undefined;

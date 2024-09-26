@@ -9,7 +9,7 @@
 - Zero dependency library.
 - Fluent API for creating log entries with Typescript support.
 - Not sure what logging package to use? Start with `console` as the underlying logger (or another logging library) and swap later to another logging library without needing to overhaul your entire codebase.
-  * Supports `bunyan`, `winston`, `pino`, `roarr`, `log4js-node`, `electron-log`, `signale`, `consola`, and more with installation examples for each.
+  * Supports `bunyan`, `winston`, `pino`, `roarr`, `log4js-node`, `electron-log`, `signale`, `consola`, `@datadog/browser-logs`, and more with installation examples for each.
 - Has ready-to-use mocks for your unit tests.
 - Unit tested against multiple logging libraries to ensure compatibility.
 
@@ -61,6 +61,7 @@ logLayer
   - [`log4js-node`](#log4js-node)
   - [`signale`](#signale)
   - [`consola`](#consola)
+  - [`@datadog/browser-logs`](#datadogbrowser-logs)
 - [Example integration](#example-integration)
 - [API](#api)
   - [Constructor](#constructor)
@@ -309,6 +310,40 @@ const log = new LogLayer<ConsolaInstance>({
       level: 5
     }),
     type: LoggerType.CONSOLA,
+  },
+})
+```
+
+### `@datadog/browser-logs`
+
+[@datadog/browser-logs docs](https://www.npmjs.com/package/@datadog/browser-logs)
+
+- Only works in the browser since this is a client-side library, not in `node.js`
+
+```typescript
+import { datadogLogs, type Logger } from '@datadog/browser-logs';
+import { LogLayer, LoggerType } from 'loglayer'
+
+datadogLogs.init({
+  clientToken: '<client token>',
+  site: 'datadoghq.com',
+  forwardErrorsToLogs: true,
+})
+
+// Ex 1
+const log = new LogLayer<Logger>({
+  logger: {
+    instance: datadogLogs.logger,
+    type: LoggerType.DATADOG_BROWSER_LOGS,
+  },
+})
+
+// Ex 2
+const logger = datadogLogs.createLogger('my-logger')
+const log2 = new LogLayer<Logger>({
+  logger: {
+    instance: logger,
+    type: LoggerType.DATADOG_BROWSER_LOGS,
   },
 })
 ```

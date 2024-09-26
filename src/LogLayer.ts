@@ -491,6 +491,7 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         case LoggerType.LOG4JS_NODE:
         case LoggerType.SIGNALE:
         case LoggerType.WINSTON:
+        case LoggerType.DATADOG_BROWSER_LOGS:
           // library wants the data object to be the last parameter
           params.push(d);
           break;
@@ -525,7 +526,11 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         }
 
         // These loggers do not have a trace type
-        if (this.loggerType === LoggerType.WINSTON || this.loggerType === LoggerType.SIGNALE) {
+        if (
+          this.loggerType === LoggerType.WINSTON ||
+          this.loggerType === LoggerType.SIGNALE ||
+          this.loggerType === LoggerType.DATADOG_BROWSER_LOGS
+        ) {
           this.loggerInstance.debug(...params);
         } else if (this.loggerInstance.trace) {
           this.loggerInstance.trace(...params);
@@ -547,7 +552,8 @@ export class LogLayer<ExternalLogger extends LoggerLibrary = LoggerLibrary, Erro
         if (
           this.loggerType === LoggerType.WINSTON ||
           this.loggerType === LoggerType.ELECTRON_LOG ||
-          this.loggerType === LoggerType.CONSOLE
+          this.loggerType === LoggerType.CONSOLE ||
+          this.loggerType === LoggerType.DATADOG_BROWSER_LOGS
         ) {
           this.loggerInstance.error(...params);
         } else if (this.loggerInstance.fatal) {

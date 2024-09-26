@@ -27,6 +27,7 @@
     "lint": "biome lint src",
     "lint:check": "biome check --apply-unsafe src",
     "lint-staged": "lint-staged",
+    "livetest:datadog-browser-logs": "ts-node-dev livetests/datadog-browser-logs.ts",
     "livetest:bunyan": "ts-node-dev livetests/bunyan.ts",
     "livetest:console": "ts-node-dev livetests/console.ts",
     "livetest:express": "ts-node-dev livetests/express.ts",
@@ -72,7 +73,8 @@
     "pino",
     "electron",
     "signale",
-    "consola"
+    "consola",
+    "datadog"
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.6.4",
@@ -80,6 +82,7 @@
     "@changesets/cli": "^2.27.1",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
+    "@datadog/browser-logs": "5.27.0",
     "@types/bunyan": "^1.8.8",
     "@types/node": "^20.12.8",
     "@types/roarr": "^2.14.3",
@@ -87,6 +90,7 @@
     "bunyan": "^1.8.15",
     "consola": "^3.2.3",
     "express": "^4.19.2",
+    "global-jsdom": "^25.0.0",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.2",
     "log4js": "^6.9.1",
